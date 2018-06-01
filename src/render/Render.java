@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 
+import static java.awt.RenderingHints.*;
+
 public class Render {
 
     public static int cur_fps;
@@ -43,6 +45,7 @@ public class Render {
 
     private void updateAll(Graphics2D g){
 
+        setRenderHints(g);
         clearScreen(g);
         updateDrawables(g);
         updateFPS(g);
@@ -53,6 +56,19 @@ public class Render {
     private void createBuffer(){
         win.createBufferStrategy(2);
         this.buffStrat = win.getBufferStrategy();
+
+    }
+
+    public void setRenderHints(Graphics2D g){
+
+        g.setRenderingHint(KEY_ALPHA_INTERPOLATION, VALUE_ALPHA_INTERPOLATION_QUALITY);
+        g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(KEY_COLOR_RENDERING, VALUE_COLOR_RENDER_QUALITY);
+        g.setRenderingHint(KEY_DITHERING, VALUE_DITHER_ENABLE);
+        g.setRenderingHint(KEY_FRACTIONALMETRICS, VALUE_FRACTIONALMETRICS_ON);
+        g.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BILINEAR);
+        g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
+        g.setRenderingHint(KEY_STROKE_CONTROL, VALUE_STROKE_PURE);
 
     }
 

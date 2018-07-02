@@ -71,6 +71,9 @@ public class Listener implements KeyListener, MouseMotionListener, MouseListener
     @Override
     public void keyPressed(KeyEvent arg0) {
 
+        if(arg0.getKeyCode() == KeyEvent.VK_ESCAPE)
+            System.exit(0);
+
         synchronized (Listener.getKeyCodes()) {
             if (!l_KeyCodes.contains(arg0.getKeyCode()) && isRelevantKeyCode(arg0.getKeyCode()))
                 l_KeyCodes.add(arg0.getKeyCode());
@@ -101,7 +104,7 @@ public class Listener implements KeyListener, MouseMotionListener, MouseListener
     }
 
     private Boolean isRelevantKeyCode(int k){
-        return k == KeyEvent.VK_W || k == KeyEvent.VK_S || k == KeyEvent.VK_D || k == KeyEvent.VK_A;
+        return k==KeyEvent.VK_M || k == KeyEvent.VK_W || k == KeyEvent.VK_S || k == KeyEvent.VK_D || k == KeyEvent.VK_A;
     }
 
 

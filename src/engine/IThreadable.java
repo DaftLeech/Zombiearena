@@ -4,6 +4,6 @@ public interface IThreadable {
 
     int getTickRate();
 
-    void toThread();
+    void toThread(int tick);
 
 }

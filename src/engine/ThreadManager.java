@@ -13,6 +13,8 @@ public class ThreadManager {
     public static ArrayList<GameObject> objects;
     private Thread paintThread;
     private Thread tickThread;
+    private final int maxTick = 1000;
+    private int tick = 0;
 
 
     public ThreadManager(){
@@ -89,13 +91,21 @@ public class ThreadManager {
                     while(true) {
                         for (GameObject obj : objects) {
 
+                            try {
+                                obj.cdl.await();
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
                             if (obj.getTickRate() != -2) {
-                                obj.toThread();
+                                obj.toThread(tick);
 
                             }
 
 
                         }
+
+                        tick = tick + 1 < 1000 ? tick + 1 : 0;
+
                         try {
                             Thread.sleep(10);
                         } catch (Exception e) {

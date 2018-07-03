@@ -19,6 +19,7 @@ public class Settings extends GameObject {
        settMap.put(SettMovementMod.name,new SettMovementMod());
        ThreadManager.addToThreadList(this);
        Render.addToDrawables(this);
+       cdl.countDown();
    }
 
 
@@ -52,7 +53,7 @@ public class Settings extends GameObject {
     }
 
     @Override
-    public void toThread() {
+    public void toThread(int tick) {
         synchronized (Listener.getKeyCodes()){
 
 

@@ -18,7 +18,7 @@ public class Zombie extends Entity{
     }
 
     @Override
-    public void toThread() {
+    public void toThread(int Tick) {
 
     }
 }

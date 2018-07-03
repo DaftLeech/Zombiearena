@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class Player extends Entity{
 
@@ -21,6 +22,12 @@ public class Player extends Entity{
     private static BufferedImage sprite;
     private static Boolean isShooting = false;
     private float speed = 2;
+    private ArrayList<Image> feetAnim_run;
+    private ArrayList<Image> curAnim = new ArrayList<>();
+    private final int feetAnim_run_imageCount = 20;
+    private boolean isRunning = false;
+    private int frameAnim = 0;
+    private int frameCount = 0;
 
 
 
@@ -32,20 +39,25 @@ public class Player extends Entity{
 
         if(sprite == null){
 
-            sprite = ResourceManager.loadImage("survivor.png");
-
+            sprite = ResourceManager.loadImage("Top_Down_Survivor/rifle/idle/survivor-idle_rifle_0.png");
+            feetAnim_run = new ArrayList<>(ResourceManager.loadImageCollection("Top_Down_Survivor/feet/run/survivor-run_",".png",feetAnim_run_imageCount));
         }
+
     }
 
     @Override
     public void toRender(Graphics2D g) {
 
-        AffineTransform at = graphicmath.createRotation(this.yaw,this.location);
+        DPoint offLocation = new DPoint(this.location.x -5, this.location.y);
+        AffineTransform at = graphicmath.createRotation(this.yaw,offLocation);
         AffineTransform backup = g.getTransform();
 
         graphicmath.drawShadow(g,this.location);
 
         g.setTransform(at);
+
+        if(curAnim.size() > 0)
+            g.drawImage(curAnim.get(frameAnim),(int)getLocation().x-15,(int)getLocation().y-15,30,30, null);
         g.drawImage(sprite,(int)getLocation().x-15,(int)getLocation().y-15,30,30, null);
 
 
@@ -59,6 +71,13 @@ public class Player extends Entity{
 
         handleKeyInput();
         setYaw(Listener.getMouseCursor());
+        handleCurAnim();
+
+        if(isRunning) {
+            frameAnim = (frameAnim + 1) % frameCount;
+        }else {
+            frameAnim = 0;
+        }
 
 
     }
@@ -116,7 +135,11 @@ public class Player extends Entity{
 
             int moveMod = (int) ((Listener.getKeyCodes().size() == 1 ? 2 : 1) );
 
-
+            if(Listener.getKeyCodes().stream().filter(k -> Listener.isMovementKeyCode(k)).count() > 0){
+                this.isRunning = true;
+            } else {
+                this.isRunning = false;
+            }
 
             for(int KeyCode : Listener.getKeyCodes()){
 
@@ -162,6 +185,17 @@ public class Player extends Entity{
 
 
             }
+        }
+
+    }
+
+    private void handleCurAnim(){
+
+        curAnim = new ArrayList<>();
+
+        if(isRunning){
+            curAnim = new ArrayList<>(feetAnim_run);
+            frameCount = feetAnim_run_imageCount;
         }
 
     }

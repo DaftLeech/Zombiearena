@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.File;
+import java.util.ArrayList;
 
 public class ResourceManager {
 
@@ -64,5 +65,17 @@ public class ResourceManager {
         g2.drawImage(Toolkit.getDefaultToolkit().createImage(ip), 0, 0, null);
         g2.dispose();
         return dest;
+    }
+
+    public static ArrayList<BufferedImage> loadImageCollection(String path, String extension, int imageCount) throws Exception{
+        ArrayList<BufferedImage> ret = new ArrayList<>();
+
+        for(int i = 0; i < imageCount; i++){
+
+            ret.add(loadImage(path+String.valueOf(i)+extension));
+
+        }
+
+        return ret;
     }
 }

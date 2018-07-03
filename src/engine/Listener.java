@@ -104,7 +104,11 @@ public class Listener implements KeyListener, MouseMotionListener, MouseListener
     }
 
     private Boolean isRelevantKeyCode(int k){
-        return k==KeyEvent.VK_M || k == KeyEvent.VK_W || k == KeyEvent.VK_S || k == KeyEvent.VK_D || k == KeyEvent.VK_A;
+        return k==KeyEvent.VK_M || isMovementKeyCode(k);
+    }
+
+    public static boolean isMovementKeyCode(int k){
+        return k == KeyEvent.VK_W || k == KeyEvent.VK_S || k == KeyEvent.VK_D || k == KeyEvent.VK_A;
     }
 
 

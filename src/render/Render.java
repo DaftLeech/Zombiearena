@@ -108,6 +108,6 @@ public class Render {
     }
 
     public static void addToDrawables(GameObject obj){
-        listDrawables.add(obj);
+        synchronized (listDrawables){listDrawables.add(obj);};
     }
 }

@@ -1,4 +1,4 @@
 package weapons;
 
-public class knife {
+class knife {
 }

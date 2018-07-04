@@ -10,14 +10,11 @@ import java.util.ArrayList;
 
 public class rifle extends AbstractWeapon {
 
-    private int lastParentState = 0;
-    private final int MeleeAnimOffX = 114;
-    private final int MeleeAnimOffY = 202;
 
-    public rifle(Player parent){
+    public rifle(){
+        super();
 
 
-        this.parent = parent;
         AnimOffX = 95;
         AnimOffY = 120;
         try {
@@ -91,8 +88,18 @@ public class rifle extends AbstractWeapon {
     @Override
     public void toRender(Graphics2D g) {
 
-        if(!(parent.getCurWeapon() == this))
-            return;
+        if(parent == null) return;
+
+        synchronized (parent) {
+            try {
+                parent.cdl.await();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (!(parent.getCurWeapon() == this))
+                return;
+
+        }
 
         AffineTransform at = graphicmath.createRotation(parent.getYaw(),parent.getLocation());
         AffineTransform backup = g.getTransform();
@@ -101,8 +108,10 @@ public class rifle extends AbstractWeapon {
         synchronized (this) {
             if (curAnim.size() > 0) {
 
-                int offX = lastParentState == Player.MELEEATTACK ? MeleeAnimOffX : AnimOffX;
-                int offY = lastParentState == Player.MELEEATTACK ? MeleeAnimOffY : AnimOffY;
+                int meleeAnimOffX = 114;
+                int offX = lastParentState == Player.MELEEATTACK ? meleeAnimOffX : AnimOffX;
+                int meleeAnimOffY = 202;
+                int offY = lastParentState == Player.MELEEATTACK ? meleeAnimOffY : AnimOffY;
 
                 g.drawImage(curAnim.get(frameAnim)
                         , (int) parent.getLocation().x - offX
@@ -124,8 +133,18 @@ public class rifle extends AbstractWeapon {
     @Override
     public void toThread(int tick) {
 
-        if(!(parent.getCurWeapon() == this))
-            return;
+        if(parent == null) return;
+
+        synchronized (parent) {
+            try {
+                parent.cdl.await();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (!(parent.getCurWeapon() == this))
+                return;
+        }
 
         synchronized (this) {
             handleCurAnim();
@@ -156,25 +175,25 @@ public class rifle extends AbstractWeapon {
                 frameCount = animation_idle_length();
                 frameAnim = 0;
                 waitFactor = 0;
-            }
+            } else
             if (curState == Player.MOVE) {
                 curAnim = new ArrayList<>(animation_move);
                 frameCount = animation_move_length();
                 frameAnim = 0;
                 waitFactor = 0;
-            }
+            } else
             if (curState == Player.RELOAD) {
                 curAnim = new ArrayList<>(animation_reload);
                 frameCount = animation_reload_length();
                 frameAnim = 0;
                 waitFactor = 1;
-            }
+            } else
             if (curState == Player.MELEEATTACK) {
                 curAnim = new ArrayList<>(animation_meleeattack);
                 frameCount = animation_meleeattack_length();
                 frameAnim = 0;
                 waitFactor = 1;
-            }
+            } else
             if (curState == Player.SHOOT) {
                 curAnim = new ArrayList<>(animation_shoot);
                 frameCount = animation_shoot_length();

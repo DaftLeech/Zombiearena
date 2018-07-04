@@ -10,7 +10,7 @@ public class Window extends JFrame {
     public static Render renderer;
     public static int WIDTH;
     public static int HEIGHT;
-    private static DisplayMode[] BEST_DISPLAY_MODES = new DisplayMode[] {
+    private static final DisplayMode[] BEST_DISPLAY_MODES = new DisplayMode[] {
             new DisplayMode(640, 480, 32, 0),
             new DisplayMode(640, 480, 16, 0),
             new DisplayMode(640, 480, 8, 0)
@@ -66,21 +66,21 @@ public class Window extends JFrame {
     }
 
     private static DisplayMode getBestDisplayMode(GraphicsDevice device) {
-        for (int x = 0; x < BEST_DISPLAY_MODES.length; x++) {
+        for (DisplayMode BEST_DISPLAY_MODE : BEST_DISPLAY_MODES) {
             DisplayMode[] modes = device.getDisplayModes();
-            for (int i = 0; i < modes.length; i++) {
-                if (modes[i].getWidth() == BEST_DISPLAY_MODES[x].getWidth()
-                        && modes[i].getHeight() == BEST_DISPLAY_MODES[x].getHeight()
-                        && modes[i].getBitDepth() == BEST_DISPLAY_MODES[x].getBitDepth()
+            for (DisplayMode mode : modes) {
+                if (mode.getWidth() == BEST_DISPLAY_MODE.getWidth()
+                        && mode.getHeight() == BEST_DISPLAY_MODE.getHeight()
+                        && mode.getBitDepth() == BEST_DISPLAY_MODE.getBitDepth()
                         ) {
-                    return BEST_DISPLAY_MODES[x];
+                    return BEST_DISPLAY_MODE;
                 }
             }
         }
         return null;
     }
 
-    public static void chooseBestDisplayMode(GraphicsDevice device) {
+    private static void chooseBestDisplayMode(GraphicsDevice device) {
         DisplayMode best = getBestDisplayMode(device);
         if (best != null) {
             device.setDisplayMode(best);

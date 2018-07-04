@@ -8,6 +8,7 @@ import render.Window;
 import render.graphicmath;
 import resources.ResourceManager;
 import weapons.AbstractWeapon;
+import weapons.pistole;
 import weapons.rifle;
 
 import java.awt.*;
@@ -18,16 +19,14 @@ import java.util.ArrayList;
 
 public class Player extends Entity{
 
+
     private DPoint location = new DPoint(0,0);
-    private double yaw = 0;
+    private double yaw;
     private int health;
     private static BufferedImage sprite;
-    private static Boolean isShooting = false;
-    private float speed = 2;
     private ArrayList<Image> feetAnim_run;
     private ArrayList<Image> curAnim = new ArrayList<>();
     private final int feetAnim_run_imageCount = 20;
-    private final int tickrateAnim = 10;
     private boolean isRunning = false;
     private int frameAnim = 0;
     private int frameCount = 0;
@@ -40,13 +39,10 @@ public class Player extends Entity{
     private int curState = 0;
 
 
-    private final rifle rifleWeapon = new rifle(this);
-    private AbstractWeapon curWeapon = rifleWeapon;
+    private rifle rifleWeapon;
+    private pistole pistoleWeapon;
+    private AbstractWeapon curWeapon;
 
-
-    //
-    private final int AnimOffX = 68;
-    private final int AnimOffY = 70;
 
     private final int WeapOffX = 95;
     private final int WeapOffY = 120;
@@ -58,18 +54,27 @@ public class Player extends Entity{
         super();
 
 
-        this.location = location;
-        this.yaw = 0.0;
-        this.health = 3;
 
-        if (sprite == null) {
 
-            sprite = ResourceManager.loadImage("Top_Down_Survivor/rifle/idle/survivor-idle_rifle_0.png");
-            feetAnim_run = new ArrayList<>(ResourceManager.loadImageCollection("Top_Down_Survivor/feet/run/survivor-run_", ".png", feetAnim_run_imageCount));
-        }
 
-        cdl.countDown();
+            this.location = location;
+            this.yaw = 0.0;
+            this.health = 3;
 
+            if (sprite == null) {
+
+                sprite = ResourceManager.loadImage("Top_Down_Survivor/rifle/idle/survivor-idle_rifle_0.png");
+                feetAnim_run = new ArrayList<>(ResourceManager.loadImageCollection("Top_Down_Survivor/feet/run/survivor-run_", ".png", feetAnim_run_imageCount));
+            }
+
+
+
+
+
+            curWeapon = null;
+
+
+            cdl.countDown();
 
     }
 
@@ -85,8 +90,10 @@ public class Player extends Entity{
 
         g.setTransform(at);
 
+        int animOffY = 70;//
+        int animOffX = 68;
         if(curAnim.size() > 0)
-            g.drawImage(curAnim.get(frameAnim),(int)getLocation().x - AnimOffX,(int)getLocation().y - AnimOffY, null);
+            g.drawImage(curAnim.get(frameAnim),(int)getLocation().x - animOffX,(int)getLocation().y - animOffY, null);
         //g.drawImage(sprite,(int)getLocation().x - WeapOffX,(int)getLocation().y - WeapOffY, null);
 
 
@@ -111,6 +118,7 @@ public class Player extends Entity{
         setYaw(Listener.getMouseCursor());
         handleCurAnim();
 
+        int tickrateAnim = 10;
         if(tick % tickrateAnim == 0) {
             if (isRunning) {
                 frameAnim = (frameAnim + 1) % frameCount;
@@ -134,11 +142,11 @@ public class Player extends Entity{
         return this.location;
     }
 
-    public void setLocation(DPoint location){
+    private void setLocation(DPoint location){
         this.location = location;
     }
 
-    public void setLocation(double x, double y) { this.location = new DPoint(x,y);}
+    private void setLocation(double x, double y) { this.location = new DPoint(x,y);}
 
     public void setHealth(int health){
         this.health = health;
@@ -164,15 +172,15 @@ public class Player extends Entity{
         this.yaw = value;
     }
 
-    public void setYaw(Point pLookAt){
+    private void setYaw(Point pLookAt){
         this.yaw = Math.toDegrees(Math.atan2(pLookAt.x - this.location.x, pLookAt.y- this.location.y));
     }
 
-    public void setIsShooting(Boolean value){
-        isShooting = value;
+    private void setIsShooting(Boolean value){
+        Boolean isShooting = value;
     }
 
-    public void handleKeyInput(){
+    private void handleKeyInput(){
 
         synchronized (Listener.getKeyCodes()){
 
@@ -180,19 +188,20 @@ public class Player extends Entity{
 
             synchronized (this) {
 
+                if(curWeapon == null) return;
                 synchronized (curWeapon) {
                     if (curWeapon.frameAnim + 1 >= curWeapon.frameCount * curWeapon.waitFactor) {
                         curState = IDLE;
                         this.isRunning = false;
-                        if (Listener.getKeyCodes().stream().filter(k -> Listener.isMovementKeyCode(k)).count() > 0) {
+                        if (Listener.getKeyCodes().stream().anyMatch(k -> Listener.isMovementKeyCode(k))) {
                             this.isRunning = true;
                             curState = MOVE;
                         }
-                        if (Listener.getKeyCodes().stream().filter(k -> k == KeyEvent.VK_R).count() > 0) {
+                        if (Listener.getKeyCodes().stream().anyMatch(k -> k == KeyEvent.VK_R)) {
 
                             curState = RELOAD;
                         }
-                        if (Listener.getKeyCodes().stream().filter(k -> k == KeyEvent.VK_V).count() > 0) {
+                        if (Listener.getKeyCodes().stream().anyMatch(k -> k == KeyEvent.VK_V)) {
 
                             curState = MELEEATTACK;
                         }
@@ -201,52 +210,61 @@ public class Player extends Entity{
                             curState = SHOOT;
                         }
                     }
+
+
+                    for (int KeyCode : Listener.getKeyCodes()) {
+
+                        if (Settings.boolByName("MovementType")) {
+
+                            if (KeyCode == KeyEvent.VK_W && getLocation().y > 0) {
+                                setLocation(getLocation().x, getLocation().y - moveMod);
+                            }
+
+                            if (KeyCode == KeyEvent.VK_S && getLocation().y < Window.HEIGHT) {
+                                setLocation(getLocation().x, getLocation().y + moveMod);
+                            }
+
+                            if (KeyCode == KeyEvent.VK_A && getLocation().x > 0) {
+                                setLocation(getLocation().x - moveMod, getLocation().y);
+                            }
+
+                            if (KeyCode == KeyEvent.VK_D && getLocation().x < Window.WIDTH) {
+                                setLocation(getLocation().x + moveMod, getLocation().y);
+                            }
+                        } else {
+                            float speed = 2;
+                            if (KeyCode == KeyEvent.VK_W) {
+                                DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw)), Math.cos(Math.toRadians(yaw)));
+                                DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
+                                setLocation(newLoc);
+                            }
+                            if (KeyCode == KeyEvent.VK_S) {
+                                DPoint dir = new DPoint(-Math.sin(Math.toRadians(yaw)), -Math.cos(Math.toRadians(yaw)));
+                                DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
+                                setLocation(newLoc);
+                            }
+                            if (KeyCode == KeyEvent.VK_A) {
+                                DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw + 90)), Math.cos(Math.toRadians(yaw + 90)));
+                                DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
+                                setLocation(newLoc);
+                            }
+                            if (KeyCode == KeyEvent.VK_D) {
+                                DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw - 90)), Math.cos(Math.toRadians(yaw - 90)));
+                                DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
+                                setLocation(newLoc);
+                            }
+                        }
+
+                        if (KeyCode == Settings.keyByName("RifleKey")) {
+                            curWeapon = rifleWeapon;
+                        }
+
+                        if (KeyCode == Settings.keyByName("PistoleKey")) {
+                            curWeapon = pistoleWeapon;
+                        }
+
+                    }
                 }
-
-            }
-
-            for(int KeyCode : Listener.getKeyCodes()){
-
-                if(Settings.boolByName("MovementType")) {
-
-                    if (KeyCode == KeyEvent.VK_W && getLocation().y > 0) {
-                        setLocation(getLocation().x, getLocation().y - moveMod);
-                    }
-
-                    if (KeyCode == KeyEvent.VK_S && getLocation().y < Window.HEIGHT) {
-                        setLocation(getLocation().x, getLocation().y + moveMod);
-                    }
-
-                    if (KeyCode == KeyEvent.VK_A && getLocation().x > 0) {
-                        setLocation(getLocation().x - moveMod, getLocation().y);
-                    }
-
-                    if (KeyCode == KeyEvent.VK_D && getLocation().x < Window.WIDTH) {
-                        setLocation(getLocation().x + moveMod, getLocation().y);
-                    }
-                }else {
-                    if (KeyCode == KeyEvent.VK_W) {
-                        DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw)), Math.cos(Math.toRadians(yaw)));
-                        DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
-                        setLocation(newLoc);
-                    }
-                    if (KeyCode == KeyEvent.VK_S) {
-                        DPoint dir = new DPoint(-Math.sin(Math.toRadians(yaw)), -Math.cos(Math.toRadians(yaw)));
-                        DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
-                        setLocation(newLoc);
-                    }
-                    if (KeyCode == KeyEvent.VK_A) {
-                        DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw + 90)), Math.cos(Math.toRadians(yaw + 90)));
-                        DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
-                        setLocation(newLoc);
-                    }
-                    if (KeyCode == KeyEvent.VK_D) {
-                        DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw - 90)), Math.cos(Math.toRadians(yaw - 90)));
-                        DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
-                        setLocation(newLoc);
-                    }
-                }
-
 
             }
         }
@@ -279,6 +297,18 @@ public class Player extends Entity{
 
     public AbstractWeapon getCurWeapon(){
         return curWeapon;
+    }
+
+    public void setCurWeapon(AbstractWeapon weap){
+        this.curWeapon = weap;
+    }
+
+    public void setRifle(rifle rifle){
+        this.rifleWeapon = rifle;
+    }
+
+    public void setPistole(pistole pistole){
+        this.pistoleWeapon = pistole;
     }
 
 }

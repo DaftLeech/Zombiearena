@@ -5,18 +5,18 @@ import engine.ThreadManager;
 import objects.GameObject;
 import render.Render;
 
-import javax.sound.midi.SysexMessage;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
 public class Settings extends GameObject {
 
-   private static HashMap<String,AbstractSettingModule> settMap = new HashMap<String, AbstractSettingModule>();
+   private static final HashMap<String,AbstractSettingModule> settMap = new HashMap<String, AbstractSettingModule>();
 
    public Settings(){
 
        settMap.put(SettMovementMod.name,new SettMovementMod());
+       settMap.put(SettRifleMod.name,new SettRifleMod());
+       settMap.put(SettPistoleMod.name,new SettPistoleMod());
        ThreadManager.addToThreadList(this);
        Render.addToDrawables(this);
        cdl.countDown();
@@ -84,5 +84,8 @@ public class Settings extends GameObject {
 
     public static boolean boolByName(String key){
        return settMap.get(key).getBool();
+    }
+    public static int keyByName(String key){
+        return settMap.get(key).getKey();
     }
 }

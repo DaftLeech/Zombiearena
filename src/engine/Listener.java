@@ -4,14 +4,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-import static general.Zombiearena.pLocal;
-import static general.Zombiearena.window;
-
 public class Listener implements KeyListener, MouseMotionListener, MouseListener {
 
     private static Boolean b_isMousePressed = false;
     private static Point p_MouseCursor = new Point(0,0);
-    private static ArrayList<Integer> l_KeyCodes = new ArrayList<>();
+    private static final ArrayList<Integer> l_KeyCodes = new ArrayList<>();
 
     @Override
     public void mouseDragged(MouseEvent arg0) {
@@ -104,7 +101,7 @@ public class Listener implements KeyListener, MouseMotionListener, MouseListener
     }
 
     private Boolean isRelevantKeyCode(int k){
-        return k==KeyEvent.VK_V || k==KeyEvent.VK_R || k==KeyEvent.VK_M || isMovementKeyCode(k);
+        return k==KeyEvent.VK_1 ||k==KeyEvent.VK_2 ||k==KeyEvent.VK_V || k==KeyEvent.VK_R || k==KeyEvent.VK_M || isMovementKeyCode(k);
     }
 
     public static boolean isMovementKeyCode(int k){

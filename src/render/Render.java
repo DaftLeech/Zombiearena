@@ -1,6 +1,5 @@
 package render;
 
-import general.Zombiearena;
 import objects.GameObject;
 
 import java.awt.*;
@@ -13,7 +12,7 @@ public class Render {
 
     public static int cur_fps;
     private BufferStrategy buffStrat;
-    private Window win;
+    private final Window win;
     private static ArrayList<GameObject> listDrawables;
 
     public Render(Window win){
@@ -59,7 +58,7 @@ public class Render {
 
     }
 
-    public void setRenderHints(Graphics2D g){
+    private void setRenderHints(Graphics2D g){
 
         g.setRenderingHint(KEY_ALPHA_INTERPOLATION, VALUE_ALPHA_INTERPOLATION_QUALITY);
         g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
@@ -108,6 +107,8 @@ public class Render {
     }
 
     public static void addToDrawables(GameObject obj){
-        synchronized (listDrawables){listDrawables.add(obj);};
+        synchronized (listDrawables){
+            listDrawables.add(obj);
+        }
     }
 }

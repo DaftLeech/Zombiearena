@@ -5,9 +5,8 @@ import java.awt.event.KeyEvent;
 public class SettMovementMod extends AbstractSettingModule {
 
     private boolean isActive = false;
-    private int keyCode = KeyEvent.VK_M;
     public static final String name = "MovementType";
-    public final String cleanName = "Movement Type:";
+    private final String cleanName = "Movement Type:";
     private String valString = "Direkt";
     private boolean isLocked = false;
 
@@ -53,6 +52,7 @@ public class SettMovementMod extends AbstractSettingModule {
 
     @Override
     public int getKey() {
+        int keyCode = KeyEvent.VK_M;
         return keyCode;
     }
 }

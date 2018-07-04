@@ -1,6 +1,6 @@
 package Settings;
 
-public abstract class AbstractSettingModule {
+abstract class AbstractSettingModule {
 
 
     public abstract String getName();

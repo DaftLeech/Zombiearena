@@ -4,15 +4,17 @@ import Settings.Settings;
 import engine.ThreadManager;
 import entitys.Player;
 import render.Window;
-
-import java.awt.*;
+import weapons.pistole;
+import weapons.rifle;
 
 public class Zombiearena {
 
-    public static ThreadManager threadManager;
-    public static Window window;
+    private static ThreadManager threadManager;
+    private static Window window;
     public static Player pLocal;
-    public static Settings settings;
+    private static Settings settings;
+    private static weapons.rifle rifle;
+    private static weapons.pistole pistole;
 
     public static void main(String[] args){
 
@@ -23,6 +25,14 @@ public class Zombiearena {
 
         try {
             pLocal = new Player(new DPoint(100, 100));
+            rifle = new rifle();
+            pistole = new pistole();
+            pLocal.setRifle(rifle);
+            pLocal.setPistole(pistole);
+            pLocal.setCurWeapon(rifle);
+            pistole.setParent(pLocal);
+            rifle.setParent(pLocal);
+
         } catch (Exception e){
             e.printStackTrace();
         }

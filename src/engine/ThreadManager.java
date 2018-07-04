@@ -1,16 +1,14 @@
 package engine;
 
-import entitys.Player;
 import render.Render;
 import render.Window;
 import objects.GameObject;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class ThreadManager {
 
-    public static ArrayList<GameObject> objects;
+    private static ArrayList<GameObject> objects;
     private Thread paintThread;
     private Thread tickThread;
     private final int maxTick = 1000;
@@ -19,7 +17,7 @@ public class ThreadManager {
 
     public ThreadManager(){
 
-        objects = new ArrayList<GameObject>();
+        objects = new ArrayList<>();
 
 
         startPaintThread();
@@ -29,47 +27,44 @@ public class ThreadManager {
 
 
 
-    public void startPaintThread(){
+    private void startPaintThread(){
 
         if(paintThread == null || !paintThread.isAlive()){
-            paintThread = new Thread(new Runnable(){
-                @Override
-                public void run() {
-                    long lastUpdateTime = System.currentTimeMillis();
-                    long targetFrameTime = 1000/144;
-                    boolean updateFPS = true;
-                    int frameCount = 1;
-                    while(true){
-                        long defaultTime = System.currentTimeMillis();
-                        Window.renderer.update();
-                        frameCount++;
+            paintThread = new Thread(() -> {
+                long lastUpdateTime = System.currentTimeMillis();
+                long targetFrameTime = 1000/144;
+                boolean updateFPS = true;
+                int frameCount = 1;
+                while(true){
+                    long defaultTime = System.currentTimeMillis();
+                    Window.renderer.update();
+                    frameCount++;
 
 
 
-                        if(defaultTime-lastUpdateTime > 1000){
+                    if(defaultTime-lastUpdateTime > 1000){
 
-                            lastUpdateTime = System.currentTimeMillis();
-                            updateFPS = true;
-
-                        }
-                        long realframeTime = System.currentTimeMillis()-defaultTime;
-
-                        if (targetFrameTime > realframeTime){
-
-                            try {
-                                Thread.sleep(targetFrameTime - realframeTime);
-                            } catch (InterruptedException e){
-                            }
-                        }
-
-                        if(updateFPS) {
-                            Render.cur_fps = (int) (1000/(System.currentTimeMillis()-defaultTime));
-                            Render.cur_fps = frameCount;
-                            frameCount = 1;
-                            updateFPS = false;
-                        }
+                        lastUpdateTime = System.currentTimeMillis();
+                        updateFPS = true;
 
                     }
+                    long realframeTime = System.currentTimeMillis()-defaultTime;
+
+                    if (targetFrameTime > realframeTime){
+
+                        try {
+                            Thread.sleep(targetFrameTime - realframeTime);
+                        } catch (InterruptedException e){
+                        }
+                    }
+
+                    if(updateFPS) {
+                        Render.cur_fps = (int) (1000/(System.currentTimeMillis()-defaultTime));
+                        Render.cur_fps = frameCount;
+                        frameCount = 1;
+                        updateFPS = false;
+                    }
+
                 }
             });
 
@@ -78,22 +73,21 @@ public class ThreadManager {
     }
 
     public static void addToThreadList(GameObject obj){
-        objects.add(obj);
+        synchronized (objects) {objects.add(obj);}
     }
 
-    public void startTickThread() {
+    private void startTickThread() {
 
         if (tickThread == null || !tickThread.isAlive()) {
-            tickThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
+            tickThread = new Thread(() -> {
 
-                    while(true) {
+                while(true) {
+                    synchronized (objects) {
                         for (GameObject obj : objects) {
 
                             try {
                                 obj.cdl.await();
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                             if (obj.getTickRate() != -2) {
@@ -103,14 +97,14 @@ public class ThreadManager {
 
 
                         }
+                    }
 
-                        tick = tick + 1 < 1000 ? tick + 1 : 0;
+                    tick = tick + 1 < 1000 ? tick + 1 : 0;
 
-                        try {
-                            Thread.sleep(10);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                    try {
+                        Thread.sleep(10);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             });

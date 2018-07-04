@@ -2,8 +2,8 @@ package general;
 
 public class DPoint {
 
-    public double x;
-    public double y;
+    public final double x;
+    public final double y;
 
     public DPoint(double x, double y){
         this.x = x;

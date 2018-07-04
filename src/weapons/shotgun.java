@@ -1,4 +1,4 @@
 package weapons;
 
-public class shotgun {
+class shotgun {
 }

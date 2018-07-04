@@ -9,9 +9,9 @@ import java.util.ArrayList;
 
 public class ResourceManager {
 
-    private static GraphicsConfiguration gsConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+    private static final GraphicsConfiguration gsConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
 
-    public static BufferedImage loadIcon(String path) throws Exception{
+    public static BufferedImage loadIcon(String path) {
         return toCompatibleImage((BufferedImage) new ImageIcon((new File("src/resources/"+path)).getPath()).getImage(), gsConfig);
     }
 
@@ -19,7 +19,7 @@ public class ResourceManager {
         return toCompatibleImage(ImageIO.read(new File("src/resources/"+path)), gsConfig);
     }
 
-    public static BufferedImage toCompatibleImage(BufferedImage image, GraphicsConfiguration gfx_config)
+    private static BufferedImage toCompatibleImage(BufferedImage image, GraphicsConfiguration gfx_config)
     {
 
 
@@ -44,7 +44,7 @@ public class ResourceManager {
     public static BufferedImage makeColorTransparent(BufferedImage im, final Color color) {
         ImageFilter filter = new RGBImageFilter() {
             // Alpha bits are set to opaque
-            public int markerRGB = color.getRGB() | 0xFF000000;
+            final int markerRGB = color.getRGB() | 0xFF000000;
 
             public final int filterRGB(int x, int y, int rgb) {
                 if ( ( rgb | 0xFF000000 ) == markerRGB ) {

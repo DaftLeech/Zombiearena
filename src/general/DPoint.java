@@ -1,5 +1,7 @@
 package general;
 
+import java.awt.*;
+
 public class DPoint {
 
     public final double x;
@@ -9,6 +11,10 @@ public class DPoint {
         this.x = x;
         this.y = y;
 
+    }
+
+    public Point toPoint(){
+        return new Point((int)x,(int)y);
     }
 
 }

@@ -95,6 +95,7 @@ public class Render {
 
 
     private void updateFPS(Graphics2D g) {
+        g.translate(0,0);
 
         g.clearRect(0, 0, 100, 30);
         g.setPaint(Color.WHITE);

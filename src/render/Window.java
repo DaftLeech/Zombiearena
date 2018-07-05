@@ -21,6 +21,7 @@ public class Window extends JFrame {
         Toolkit defToolkit = Toolkit.getDefaultToolkit();
         WIDTH = defToolkit.getScreenSize().width;
         HEIGHT = defToolkit.getScreenSize().height;
+        setBackground(Color.BLACK);
 
 
 

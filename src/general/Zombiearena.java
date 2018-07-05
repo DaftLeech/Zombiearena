@@ -8,6 +8,8 @@ import weapons.pistole;
 import weapons.rifle;
 import world.Map;
 
+import java.awt.*;
+
 public class Zombiearena {
 
     private static ThreadManager threadManager;
@@ -27,7 +29,11 @@ public class Zombiearena {
 
         try {
             map = new Map();
-            pLocal = new Player(new DPoint(100, 100));
+            int roomCount = map.getDngn().getFinalRooms().size();
+            int roomID = (int)(roomCount *Math.random());
+            Rectangle room =  map.getDngn().getFinalRooms().get(roomID);
+            Map.location = new DPoint(room.getCenterX()- Window.WIDTH/2,room.getCenterY() - Window.HEIGHT/2);
+            pLocal = new Player(new DPoint(Window.WIDTH/2, Window.HEIGHT/2));
             rifle = new rifle();
             pistole = new pistole();
             pLocal.setRifle(rifle);

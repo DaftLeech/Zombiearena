@@ -2,6 +2,7 @@ package entitys;
 
 import engine.Listener;
 import general.DPoint;
+import render.Camera;
 import settings.Settings;
 import objects.Entity;
 import render.Window;
@@ -31,6 +32,7 @@ public class Player extends Entity{
     private boolean isRunning = false;
     private int frameAnim = 0;
     private int frameCount = 0;
+    private final float speed = 3F;
 
     public static final int IDLE = 0;
     public static final int MELEEATTACK = 1;
@@ -44,9 +46,6 @@ public class Player extends Entity{
     private pistole pistoleWeapon;
     private AbstractWeapon curWeapon;
 
-
-    private final int WeapOffX = 95;
-    private final int WeapOffY = 120;
 
 
 
@@ -95,7 +94,6 @@ public class Player extends Entity{
         int animOffX = 68;
         if(curAnim.size() > 0)
             g.drawImage(curAnim.get(frameAnim),(int)getLocation().x - animOffX,(int)getLocation().y - animOffY, null);
-        //g.drawImage(sprite,(int)getLocation().x - WeapOffX,(int)getLocation().y - WeapOffY, null);
 
 
 
@@ -108,6 +106,8 @@ public class Player extends Entity{
         g.setPaint(Color.GREEN);
 
         g.drawLine((int)getLocation().x,(int)getLocation().y,(int)getLocation().x,(int)getLocation().y);
+
+        g.draw(Camera.getInstance().getGlueArea());
 
     }
 
@@ -233,32 +233,24 @@ public class Player extends Entity{
                                 setLocation(getLocation().x + moveMod, getLocation().y);
                             }
                         } else {
-                            float speed = 2;
-                            if (KeyCode == KeyEvent.VK_W) {
-                                DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw)), Math.cos(Math.toRadians(yaw)));
 
-                                if(location.x > Window.WIDTH*0.1 && location.x < Window.WIDTH-Window.WIDTH*0.1 && location.y > Window.HEIGHT*0.1 && location.y < Window.HEIGHT-Window.HEIGHT*0.1) {
-                                    DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
-                                    setLocation(newLoc);
-                                } else {
-                                    DPoint newLoc = new DPoint(Map.location.x + dir.x * speed, Map.location.y + dir.y * speed);
-                                    Map.location = newLoc;
+                            synchronized (Map.location) {
+                                if (KeyCode == KeyEvent.VK_W) {
+                                    DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw)), Math.cos(Math.toRadians(yaw)));
+                                    handleMoveDir(dir);
                                 }
-                            }
-                            if (KeyCode == KeyEvent.VK_S) {
-                                DPoint dir = new DPoint(-Math.sin(Math.toRadians(yaw)), -Math.cos(Math.toRadians(yaw)));
-                                DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
-                                setLocation(newLoc);
-                            }
-                            if (KeyCode == KeyEvent.VK_A) {
-                                DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw + 90)), Math.cos(Math.toRadians(yaw + 90)));
-                                DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
-                                setLocation(newLoc);
-                            }
-                            if (KeyCode == KeyEvent.VK_D) {
-                                DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw - 90)), Math.cos(Math.toRadians(yaw - 90)));
-                                DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
-                                setLocation(newLoc);
+                                if (KeyCode == KeyEvent.VK_S) {
+                                    DPoint dir = new DPoint(-Math.sin(Math.toRadians(yaw)), -Math.cos(Math.toRadians(yaw)));
+                                    handleMoveDir(dir);
+                                }
+                                if (KeyCode == KeyEvent.VK_A) {
+                                    DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw + 90)), Math.cos(Math.toRadians(yaw + 90)));
+                                    handleMoveDir(dir);
+                                }
+                                if (KeyCode == KeyEvent.VK_D) {
+                                    DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw - 90)), Math.cos(Math.toRadians(yaw - 90)));
+                                    handleMoveDir(dir);
+                                }
                             }
                         }
 
@@ -316,6 +308,18 @@ public class Player extends Entity{
 
     public void setPistole(pistole pistole){
         this.pistoleWeapon = pistole;
+    }
+
+    public void handleMoveDir(DPoint dir){
+        DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
+        if(Map.contains(newLoc)) {
+            if (Camera.getInstance().getGlueArea().contains(newLoc.toPoint())) {
+                setLocation(newLoc);
+            } else {
+                DPoint newMapLoc = new DPoint(Map.location.x + dir.x * speed, Map.location.y + dir.y * speed);
+                Map.location = newMapLoc;
+            }
+        }
     }
 
 }

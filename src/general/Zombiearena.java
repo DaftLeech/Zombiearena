@@ -1,11 +1,12 @@
 package general;
 
-import Settings.Settings;
+import settings.Settings;
 import engine.ThreadManager;
 import entitys.Player;
 import render.Window;
 import weapons.pistole;
 import weapons.rifle;
+import world.Map;
 
 public class Zombiearena {
 
@@ -15,6 +16,7 @@ public class Zombiearena {
     private static Settings settings;
     private static weapons.rifle rifle;
     private static weapons.pistole pistole;
+    private static Map map;
 
     public static void main(String[] args){
 
@@ -24,6 +26,7 @@ public class Zombiearena {
 
 
         try {
+            map = new Map();
             pLocal = new Player(new DPoint(100, 100));
             rifle = new rifle();
             pistole = new pistole();

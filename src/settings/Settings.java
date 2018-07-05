@@ -1,4 +1,4 @@
-package Settings;
+package settings;
 
 import engine.Listener;
 import engine.ThreadManager;

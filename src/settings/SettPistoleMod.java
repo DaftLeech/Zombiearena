@@ -1,12 +1,12 @@
-package Settings;
+package settings;
 
 import java.awt.event.KeyEvent;
 
-public class SettRifleMod extends AbstractSettingModule {
+public class SettPistoleMod extends AbstractSettingModule {
 
-    private final int keyCode = KeyEvent.VK_1;
-    public static final String name = "RifleKey";
-    private final String cleanName = "Rifle HotKey:";
+    private final int keyCode = KeyEvent.VK_2;
+    public static final String name = "PistoleKey";
+    private final String cleanName = "Pistole HotKey:";
     private final String valString = KeyEvent.getKeyText(keyCode);
     private boolean isLocked = false;
 

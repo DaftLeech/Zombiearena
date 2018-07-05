@@ -2,7 +2,7 @@ package entitys;
 
 import engine.Listener;
 import general.DPoint;
-import Settings.Settings;
+import settings.Settings;
 import objects.Entity;
 import render.Window;
 import render.graphicmath;
@@ -10,6 +10,7 @@ import resources.ResourceManager;
 import weapons.AbstractWeapon;
 import weapons.pistole;
 import weapons.rifle;
+import world.Map;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -235,8 +236,14 @@ public class Player extends Entity{
                             float speed = 2;
                             if (KeyCode == KeyEvent.VK_W) {
                                 DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw)), Math.cos(Math.toRadians(yaw)));
-                                DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
-                                setLocation(newLoc);
+
+                                if(location.x > Window.WIDTH*0.1 && location.x < Window.WIDTH-Window.WIDTH*0.1 && location.y > Window.HEIGHT*0.1 && location.y < Window.HEIGHT-Window.HEIGHT*0.1) {
+                                    DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
+                                    setLocation(newLoc);
+                                } else {
+                                    DPoint newLoc = new DPoint(Map.location.x + dir.x * speed, Map.location.y + dir.y * speed);
+                                    Map.location = newLoc;
+                                }
                             }
                             if (KeyCode == KeyEvent.VK_S) {
                                 DPoint dir = new DPoint(-Math.sin(Math.toRadians(yaw)), -Math.cos(Math.toRadians(yaw)));

@@ -1,4 +1,4 @@
-package Settings;
+package settings;
 
 abstract class AbstractSettingModule {
 

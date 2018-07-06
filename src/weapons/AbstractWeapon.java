@@ -20,6 +20,10 @@ public abstract class AbstractWeapon extends Entity {
     public abstract int animation_move_length();
     public abstract int animation_reload_length();
     public abstract int animation_shoot_length();
+    public abstract double spread();
+    public abstract double speed();
+    public abstract double reloadTime();
+
     public abstract void loadAnimations() throws Exception;
     public abstract void handleCurAnim();
     public void setParent(Player parent){

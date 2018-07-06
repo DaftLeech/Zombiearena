@@ -6,7 +6,6 @@ public class SettRifleMod extends AbstractSettingModule {
 
     private final int keyCode = KeyEvent.VK_1;
     public static final String name = "RifleKey";
-    private final String cleanName = "Rifle HotKey:";
     private final String valString = KeyEvent.getKeyText(keyCode);
     private boolean isLocked = false;
 
@@ -52,6 +51,7 @@ public class SettRifleMod extends AbstractSettingModule {
 
     @Override
     public String getCleanName() {
+        String cleanName = "Rifle HotKey:";
         return cleanName;
     }
 }

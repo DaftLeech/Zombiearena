@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class Player extends Entity{
 
 
-    private DPoint location = new DPoint(0,0);
+    private DPoint location;
     private double yaw;
     private int health;
     private static BufferedImage sprite;
@@ -32,7 +32,6 @@ public class Player extends Entity{
     private boolean isRunning = false;
     private int frameAnim = 0;
     private int frameCount = 0;
-    private final float speed = 3F;
 
     public static final int IDLE = 0;
     public static final int MELEEATTACK = 1;
@@ -71,6 +70,8 @@ public class Player extends Entity{
 
 
 
+
+
             curWeapon = null;
 
 
@@ -90,14 +91,18 @@ public class Player extends Entity{
 
         g.setTransform(at);
 
-        int animOffY = 70;//
+        int animOffY = 70;
         int animOffX = 68;
-        if(curAnim.size() > 0)
-            g.drawImage(curAnim.get(frameAnim),(int)getLocation().x - animOffX,(int)getLocation().y - animOffY, null);
+        //if(curAnim.size() > 0)
+            //g.drawImage(curAnim.get(frameAnim),(int)getLocation().x - animOffX,(int)getLocation().y - animOffY, null);
+
 
 
 
         g.setTransform(backup);
+
+        g.setPaint(Color.RED);
+        g.drawLine((int)location.x,(int)location.y,(int)(Math.cos(Math.toRadians(-yaw+90))*(10000)+ location.x),(int)(Math.sin(Math.toRadians(-yaw+90))*(10000)+location.y));
 
         g.setStroke(new BasicStroke(2));
         g.setPaint(Color.RED);
@@ -189,28 +194,30 @@ public class Player extends Entity{
 
             synchronized (this) {
 
-                if(curWeapon == null) return;
-                synchronized (curWeapon) {
-                    if (curWeapon.frameAnim + 1 >= curWeapon.frameCount * curWeapon.waitFactor) {
-                        curState = IDLE;
-                        this.isRunning = false;
-                        if (Listener.getKeyCodes().stream().anyMatch(k -> Listener.isMovementKeyCode(k))) {
-                            this.isRunning = true;
-                            curState = MOVE;
-                        }
-                        if (Listener.getKeyCodes().stream().anyMatch(k -> k == KeyEvent.VK_R)) {
+                if(curWeapon != null) {
+                    synchronized (curWeapon) {
+                        if (curWeapon.frameAnim + 1 >= curWeapon.frameCount * curWeapon.waitFactor) {
+                            curState = IDLE;
+                            this.isRunning = false;
+                            if (Listener.getKeyCodes().stream().anyMatch(Listener::isMovementKeyCode)) {
+                                this.isRunning = true;
+                                curState = MOVE;
+                            }
+                            if (Listener.getKeyCodes().stream().anyMatch(k -> k == KeyEvent.VK_R)) {
 
-                            curState = RELOAD;
-                        }
-                        if (Listener.getKeyCodes().stream().anyMatch(k -> k == KeyEvent.VK_V)) {
+                                curState = RELOAD;
+                            }
+                            if (Listener.getKeyCodes().stream().anyMatch(k -> k == KeyEvent.VK_V)) {
 
-                            curState = MELEEATTACK;
-                        }
-                        if (Listener.isMousePressed()) {
-                            setIsShooting(true);
-                            curState = SHOOT;
+                                curState = MELEEATTACK;
+                            }
+                            if (Listener.isMousePressed()) {
+                                setIsShooting(true);
+                                curState = SHOOT;
+                            }
                         }
                     }
+                }
 
 
                     for (int KeyCode : Listener.getKeyCodes()) {
@@ -265,7 +272,7 @@ public class Player extends Entity{
                     }
                 }
 
-            }
+
         }
 
     }
@@ -310,7 +317,8 @@ public class Player extends Entity{
         this.pistoleWeapon = pistole;
     }
 
-    public void handleMoveDir(DPoint dir){
+    private void handleMoveDir(DPoint dir){
+        float speed = 3F;
         DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
         if(Map.contains(newLoc)) {
             if (Camera.getInstance().getGlueArea().contains(newLoc.toPoint())) {

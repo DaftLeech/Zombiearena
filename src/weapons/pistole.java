@@ -58,6 +58,21 @@ public class pistole extends AbstractWeapon{
     }
 
     @Override
+    public double spread() {
+        return 0;
+    }
+
+    @Override
+    public double speed() {
+        return 0;
+    }
+
+    @Override
+    public double reloadTime() {
+        return 0;
+    }
+
+    @Override
     public void loadAnimations() throws Exception {
 
         if(animation_idle_length() > 0)

@@ -6,7 +6,6 @@ public class SettPistoleMod extends AbstractSettingModule {
 
     private final int keyCode = KeyEvent.VK_2;
     public static final String name = "PistoleKey";
-    private final String cleanName = "Pistole HotKey:";
     private final String valString = KeyEvent.getKeyText(keyCode);
     private boolean isLocked = false;
 
@@ -52,6 +51,7 @@ public class SettPistoleMod extends AbstractSettingModule {
 
     @Override
     public String getCleanName() {
+        String cleanName = "Pistole HotKey:";
         return cleanName;
     }
 }

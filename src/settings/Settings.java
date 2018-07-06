@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class Settings extends GameObject {
 
-   private static final HashMap<String,AbstractSettingModule> settMap = new HashMap<String, AbstractSettingModule>();
+   private static final HashMap<String,AbstractSettingModule> settMap = new HashMap<>();
 
    public Settings(){
 

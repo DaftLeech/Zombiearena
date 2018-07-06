@@ -1,9 +1,9 @@
 package world;
 
 import general.DPoint;
+import general.Zombiearena;
 import objects.GameObject;
 import render.Render;
-import render.Window;
 import resources.ResourceManager;
 
 import java.awt.*;
@@ -13,22 +13,23 @@ import java.awt.image.BufferedImage;
 public class Map extends GameObject {
 
     private static Dungeon dngn;
-    private final int deepth = 3;
-    private final int width = 10000;
-    private final int height = 10000;
     private BufferedImage tile;
     public static DPoint location = new DPoint(0,0);
-    public static Area shape = new Area();
+    private static final Area shape = new Area();
     public Map(){
 
-        Rectangle size = new Rectangle(0,0,width, height);
+
+        int height = 10000;
+        int width = 10000;
+        Rectangle size = new Rectangle(0,0, width, height);
 
         try {
             ResourceManager.loadImage("test.png");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        dngn = new Dungeon(size,0.7,deepth);
+        int deepth = 3;
+        dngn = new Dungeon(size,0.7, deepth);
 
 
         for(Rectangle room : dngn.getFinalRooms()){
@@ -39,7 +40,7 @@ public class Map extends GameObject {
         }
 
         Render.addToDrawables(this);
-        System.out.println(Math.pow(2,deepth-1));
+
         cdl.countDown();
     }
 
@@ -50,16 +51,36 @@ public class Map extends GameObject {
             g.translate(-location.x, -location.y);
 
             g.setPaint(Color.WHITE);
-        /*for(Rectangle path : dngn.getPaths()){
-            //g.fill(path);
 
-        }
-        //g.setPaint(Color.red);
-
-        for(Rectangle room : dngn.getFinalRooms()){
-            g.fill(room);
-        }*/
             g.fill(shape);
+
+
+
+            if(Zombiearena.pLocal != null) {
+                for (Rectangle room : dngn.getFinalRooms()) {
+
+                    int x = room.x;
+                    int y = room.y;
+                    int width = room.width;
+                    int height = room.height;
+
+
+                    int px = (int) (Zombiearena.pLocal.getLocation().x + location.x);
+                    int py = (int) (Zombiearena.pLocal.getLocation().y + location.y);
+                    double yaw = Zombiearena.pLocal.getYaw();
+
+                    int cx = (int) (Math.cos(Math.toRadians(-yaw + 90)) * ((x-px)) + px);
+                    int cy = (int) (Math.sin(Math.toRadians(-yaw + 90)) * ((y-py)) + py);
+
+                    g.setPaint(Color.RED);
+
+
+                    g.setStroke(new BasicStroke(10));
+                    g.drawLine(cx, cy, cx, cy);
+                    g.setStroke(new BasicStroke(1));
+
+                }
+            }
 
             g.translate(location.x, location.y);
 

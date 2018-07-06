@@ -5,11 +5,11 @@ import java.util.ArrayList;
 
 public class Dungeon {
 
-    private ArrayList<Rectangle> rooms = new ArrayList<>();
-    private ArrayList<Rectangle> finalrooms = new ArrayList<>();
-    private ArrayList<Rectangle> paths = new ArrayList<>();
-    private double roomPerc;
-    private int pathWidth;
+    private final ArrayList<Rectangle> rooms = new ArrayList<>();
+    private final ArrayList<Rectangle> finalrooms = new ArrayList<>();
+    private final ArrayList<Rectangle> paths = new ArrayList<>();
+    private final double roomPerc;
+    private final int pathWidth;
 
     public Dungeon(Rectangle size, double roomPerc, int deepth){
 

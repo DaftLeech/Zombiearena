@@ -6,7 +6,6 @@ public class SettMovementMod extends AbstractSettingModule {
 
     private boolean isActive = false;
     public static final String name = "MovementType";
-    private final String cleanName = "Movement Type:";
     private String valString = "Direkt";
     private boolean isLocked = false;
 
@@ -17,6 +16,7 @@ public class SettMovementMod extends AbstractSettingModule {
 
     @Override
     public String getCleanName() {
+        String cleanName = "Movement Type:";
         return cleanName;
     }
 

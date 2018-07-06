@@ -84,6 +84,20 @@ public class rifle extends AbstractWeapon {
         return 3;
     }
 
+    @Override
+    public double spread() {
+        return 0;
+    }
+
+    @Override
+    public double speed() {
+        return 0;
+    }
+
+    @Override
+    public double reloadTime() {
+        return 0;
+    }
 
     @Override
     public void toRender(Graphics2D g) {

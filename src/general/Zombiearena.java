@@ -32,7 +32,7 @@ public class Zombiearena {
             weapons.pistole pistole = new pistole();
             pLocal.setRifle(rifle);
             pLocal.setPistole(pistole);
-           // pLocal.setCurWeapon(rifle);
+            pLocal.setCurWeapon(rifle);
             pistole.setParent(pLocal);
             rifle.setParent(pLocal);
 

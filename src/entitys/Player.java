@@ -93,8 +93,8 @@ public class Player extends Entity{
 
         int animOffY = 70;
         int animOffX = 68;
-        //if(curAnim.size() > 0)
-            //g.drawImage(curAnim.get(frameAnim),(int)getLocation().x - animOffX,(int)getLocation().y - animOffY, null);
+        if(curAnim.size() > 0)
+            g.drawImage(curAnim.get(frameAnim),(int)getLocation().x - animOffX,(int)getLocation().y - animOffY, null);
 
 
 

@@ -4,11 +4,14 @@ import general.DPoint;
 import general.Zombiearena;
 import objects.GameObject;
 import render.Render;
+import render.graphicmath;
 import resources.ResourceManager;
 
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Map extends GameObject {
 
@@ -57,7 +60,11 @@ public class Map extends GameObject {
 
 
             if(Zombiearena.pLocal != null) {
-                for (Rectangle room : dngn.getFinalRooms()) {
+                Point pHere = Zombiearena.pLocal.getLocation().toPoint();
+                pHere.translate((int)location.x,(int)location.y);
+                ArrayList<Rectangle> shape = new ArrayList<>(dngn.getFinalRooms());
+                shape.addAll(dngn.getPaths());
+                for (Rectangle room : shape) {
 
                     int x = room.x;
                     int y = room.y;
@@ -65,24 +72,39 @@ public class Map extends GameObject {
                     int height = room.height;
 
 
-                    int px = (int) (Zombiearena.pLocal.getLocation().x + location.x);
-                    int py = (int) (Zombiearena.pLocal.getLocation().y + location.y);
+                    double px = (Zombiearena.pLocal.getLocation().x + location.x);
+                    double py = (Zombiearena.pLocal.getLocation().y + location.y);
                     double yaw = Zombiearena.pLocal.getYaw();
 
-                    int cx = (int) (Math.cos(Math.toRadians(-yaw + 90)) * ((x-px)) + px);
-                    int cy = (int) (Math.sin(Math.toRadians(-yaw + 90)) * ((y-py)) + py);
+                    double px2 = (Math.cos(Math.toRadians(-yaw+90))*(10000)+ Zombiearena.pLocal.getLocation().x+location.x);
+                    double py2 = (Math.sin(Math.toRadians(-yaw+90))*(10000)+ Zombiearena.pLocal.getLocation().y+location.y);
 
-                    g.setPaint(Color.RED);
+                    Point[] edges = new Point[4];
+                    edges[0] = graphicmath.lineIntersect(x,y,x+width,y,(int)px,(int)py,(int)px2,(int)py2);
+                    edges[1] = graphicmath.lineIntersect(x,y+height,x+width,y+height,(int)px,(int)py,(int)px2,(int)py2);
+                    edges[2] = graphicmath.lineIntersect(x,y,x,y+height,(int)px,(int)py,(int)px2,(int)py2);
+                    edges[3] = graphicmath.lineIntersect(x+width,y,x+width,y+height,(int)px,(int)py,(int)px2,(int)py2);
 
 
                     g.setStroke(new BasicStroke(10));
-                    g.drawLine(cx, cy, cx, cy);
+                    g.setPaint(Color.RED);
+
+                    for(Point intersection : edges) {
+                        if (intersection != null) {
+                            if(!contains(intersection.x+10,intersection.y)||!contains(intersection.x-10,intersection.y)||!contains(intersection.x,intersection.y+10)||!contains(intersection.x,intersection.y-10))
+                                g.drawLine(intersection.x, intersection.y, intersection.x, intersection.y);
+                        }
+                    }
+
                     g.setStroke(new BasicStroke(1));
 
                 }
             }
 
             g.translate(location.x, location.y);
+            g.setColor(Color.GREEN);
+            if(Zombiearena.pLocal != null)
+                g.drawString(String.valueOf((-Zombiearena.pLocal.getYaw()+90)*Math.PI/180),20,100);
 
         }
     }
@@ -104,6 +126,11 @@ public class Map extends GameObject {
     public static boolean contains(DPoint point){
         Point p = point.toPoint();
         p.translate((int)location.x,(int)location.y);
+        return dngn.getPaths().stream().anyMatch(r -> r.contains(p)) || dngn.getFinalRooms().stream().anyMatch(r -> r.contains(p));
+    }
+
+    public static boolean contains(int x, int y){
+        Point p = new Point(x,y);
         return dngn.getPaths().stream().anyMatch(r -> r.contains(p)) || dngn.getFinalRooms().stream().anyMatch(r -> r.contains(p));
     }
 }

@@ -21,6 +21,7 @@ public abstract class AbstractWeapon extends Entity {
     public abstract double spread();
     public abstract double speed();
     public abstract double reloadTime();
+    public abstract void updateHitbox();
 
     public abstract void loadAnimations() throws Exception;
     public abstract void handleCurAnim();

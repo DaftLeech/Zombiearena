@@ -95,6 +95,7 @@ public class Player extends Entity {
         g.setColor(Color.red);
 
 
+
         g.rotate(this.location.getX(), this.location.getY(), -this.yaw);
 
         Point dir = new Point((float) Math.cos(Math.toRadians(yaw)), (float) Math.sin(Math.toRadians(yaw)));
@@ -102,6 +103,7 @@ public class Player extends Entity {
         g.drawLine(getLocation().getX(), getLocation().getY(), getLocation().getX() + dir.getX() * 30F, getLocation().getY() + dir.getY() * 30F);
 
         g.translate(Map.location.getX(), Map.location.getY());
+        g.drawString(String.valueOf(curWeapon.collition()),50,500);
 
         g.flush();
 
@@ -300,15 +302,25 @@ public class Player extends Entity {
     private void handleMoveDir(Point dir, int delta) {
         float speed = 0.3F * delta;
         Point newLoc = new Point(location.getX() + dir.getX() * speed, location.getY() + dir.getY() * speed);
-        if (Map.contains(newLoc)) {
-            if (Camera.getInstance().getGlueArea().contains(newLoc)) {
-                setLocation(newLoc);
-            } else {
+        if (Map.contains(newLoc) && !curWeapon.collition(dir.getX() * speed,dir.getY() * speed)) {
+
                 Point newMapLoc = new Point(Map.location.getX() + dir.getX() * speed, Map.location.getY() + dir.getY() * speed);
                 Map.location = newMapLoc;
                 setLocation(newLoc);
-            }
+
         }
+
+        /*
+        while (curWeapon.collition()) {
+            speed = 2F * delta;
+            newLoc = new Point(location.getX() - dir.getX() * speed, location.getY() - dir.getY() * speed);
+            Point newMapLoc = new Point(Map.location.getX() - dir.getX() * speed, Map.location.getY() - dir.getY() * speed);
+            Map.location = newMapLoc;
+            setLocation(newLoc);
+
+            curWeapon.updateHitbox();
+
+        }*/
     }
 
 }

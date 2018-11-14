@@ -74,6 +74,11 @@ public class pistole extends AbstractWeapon{
     }
 
     @Override
+    public void updateHitbox() {
+
+    }
+
+    @Override
     public void loadAnimations() throws Exception {
 
         ArrayList<Image> temp;

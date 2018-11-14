@@ -2,11 +2,10 @@ package entitys;
 
 import general.Zombiearena;
 import objects.Entity;
-import org.newdawn.slick.Animation;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
+import org.newdawn.slick.*;
+import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Point;
+import org.newdawn.slick.geom.Shape;
 import render.graphicmath;
 import resources.ResourceManager;
 import world.Map;
@@ -50,6 +49,8 @@ public class Zombie extends Entity {
         }
         curAnim = idle_Anim;
         curAnimCount = idle_AnimCount;
+        AnimOffX = 95;
+        AnimOffY = 120;
 
         layer = Layer.OBJECT;
         cdl.countDown();
@@ -62,7 +63,7 @@ public class Zombie extends Entity {
                 .loadImageCollection("zombie/skeleton-idle_"
                         , ".png"
                         , idle_AnimCount)));
-        idle_Anim = new Animation(temp.toArray(new Image[temp.size()]), 50, true);
+        idle_Anim = new Animation(temp.toArray(new Image[temp.size()]), 5000, false);
 
         temp = new ArrayList<>(new ArrayList<>(ResourceManager
                 .loadImageCollection("zombie/skeleton-move_"
@@ -80,7 +81,7 @@ public class Zombie extends Entity {
     @Override
     public void toRender(Graphics g) {
 
-        if(Map.location != null) return;
+        if(Map.location == null) return;
 
         g.translate(-Map.location.getX(), -Map.location.getY());
         g.rotate(this.location.getX(), this.location.getY(), this.getYaw());
@@ -92,6 +93,10 @@ public class Zombie extends Entity {
                 , (int) getLocation().getY() - AnimOffY
         );
 
+        g.setColor(Color.green);
+
+        for(Shape hitbox : hitboxes)
+            g.draw(hitbox);
 
         g.rotate(this.location.getX(), this.location.getY(), -this.getYaw());
         g.translate(Map.location.getX(), Map.location.getY());
@@ -110,8 +115,15 @@ public class Zombie extends Entity {
 
         curAnim.update(delta);
         handleCurAnim();
-        //yaw = graphicmath.getTargetAngle(this.location.getX(),this.location.getY(), Zombiearena.pLocal.getLocation().getX(), Zombiearena.pLocal.getLocation().getY());
+        yaw = graphicmath.getTargetAngle(this.location.getX(),this.location.getY(), Zombiearena.pLocal.getLocation().getX(), Zombiearena.pLocal.getLocation().getY());
 
+        if(hitboxes.size() == 0) {
+            hitboxes.add(new Circle(getLocation().getX(), getLocation().getY(), 80));
+        } else {
+            for(Circle hitbox : hitboxes){
+                hitbox.setLocation(getLocation().getX()-hitbox.radius, getLocation().getY()-hitbox.radius);
+            }
+        }
 
     }
 

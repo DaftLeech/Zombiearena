@@ -33,8 +33,8 @@ public class Map extends GameObject {
         size = new Rectangle(0,0, width, height);
 
         try {
-            tile = new Image("src/resources/"+"floor1.png");
-            base = new Image("src/resources/"+"roof1.png");
+            tile = new Image("src/resources/"+"test.png");
+            //base = new Image("src/resources/"+"roof1.png");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,7 +88,7 @@ public class Map extends GameObject {
 
 
             g.setColor(Color.white);
-            g.texture(size,base);
+            //g.texture(size,base);
 
             for(Rectangle room : dngn.getFinalRooms()){
                 g.texture(room,tile);

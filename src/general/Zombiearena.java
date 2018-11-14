@@ -57,11 +57,13 @@ public class Zombiearena extends BasicGame{
         int roomCount = map.getDngn().getFinalRooms().size();
         int roomID = (int)(roomCount *Math.random());
         Rectangle room =  map.getDngn().getFinalRooms().get(roomID);
+        int roomIDCopy = roomID;
         Map.location = new Point(room.getCenterX()- Window.WIDTH/2,room.getCenterY() - Window.HEIGHT/2);
         pLocal = new Player(new Point(room.getCenterX(), room.getCenterY()));
         for(int i = 0; i < 100; i++) {
             roomID = (int)(roomCount *Math.random());
             room =  map.getDngn().getFinalRooms().get(roomID);
+            if(roomIDCopy != roomID)
             new Zombie(new Point(room.getCenterX(),room.getCenterY()));
         }
         weapons.rifle rifle = new rifle();

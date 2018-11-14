@@ -1,10 +1,9 @@
 package weapons;
 
 import entitys.Player;
-import org.newdawn.slick.Animation;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
+import org.newdawn.slick.*;
+import org.newdawn.slick.geom.Circle;
+import org.newdawn.slick.geom.Shape;
 import resources.ResourceManager;
 import world.Map;
 
@@ -27,6 +26,7 @@ public class rifle extends AbstractWeapon {
         curAnim = animation_idle;
         frameCount = animation_idle_length();
         waitFactor = 1;
+
 
 
         cdl.countDown();
@@ -151,6 +151,11 @@ public class rifle extends AbstractWeapon {
         }
 
 
+        g.setColor(Color.green);
+
+        for(Shape hitbox : hitboxes)
+            g.draw(hitbox);
+
         g.rotate(parent.getLocation().getX(),parent.getLocation().getY(),-parent.getYaw());
         g.translate(Map.location.getX(), Map.location.getY());
         g.flush();
@@ -187,6 +192,18 @@ public class rifle extends AbstractWeapon {
                 waitFactor += 1;
         }
 
+        updateHitbox();
+
+    }
+
+    public void updateHitbox(){
+        if(hitboxes.size() == 0) {
+            hitboxes.add(new Circle(parent.getLocation().getX(), parent.getLocation().getY(), 80));
+        } else {
+            for(Circle hitbox : hitboxes){
+                hitbox.setLocation(parent.getLocation().getX()-hitbox.radius, parent.getLocation().getY()-hitbox.radius);
+            }
+        }
     }
 
     @Override

@@ -83,6 +83,8 @@ public class Render {
 
         synchronized (listDrawables){
 
+
+
             for(GameObject obj : listDrawables.stream().sorted((obj1,obj2) -> Integer.compare(obj1.LayerToInt(),obj2.LayerToInt())).collect(Collectors.toCollection(ArrayList::new))){
 
                 //synchronized (obj) {

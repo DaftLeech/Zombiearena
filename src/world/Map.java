@@ -12,17 +12,16 @@ import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import render.Render;
-import resources.ResourceManager;
-
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class Map extends GameObject {
 
     private static Dungeon dngn;
     private Image tile;
+    private Image base;
     public static Point location = new Point(0f,0f);
     private static Shape shape;
+    private Rectangle size;
 
 
 
@@ -31,10 +30,11 @@ public class Map extends GameObject {
 
         int height = 10000;
         int width = 10000;
-        Rectangle size = new Rectangle(0,0, width, height);
+        size = new Rectangle(0,0, width, height);
 
         try {
-            tile = new Image("src/resources/"+"test.png");
+            tile = new Image("src/resources/"+"floor1.png");
+            base = new Image("src/resources/"+"roof1.png");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,6 +88,7 @@ public class Map extends GameObject {
 
 
             g.setColor(Color.white);
+            g.texture(size,base);
 
             for(Rectangle room : dngn.getFinalRooms()){
                 g.texture(room,tile);

@@ -82,6 +82,7 @@ public class Zombiearena extends BasicGame{
     @Override
     public void render(GameContainer gameContainer, Graphics graphics) throws SlickException {
 
+        //graphics.setWorldClip((int) Map.location.getX(), (int) Map.location.getY(), (int) Window.WIDTH, (int) Window.HEIGHT);
         for(GameObject obj : Render.listDrawables.stream().sorted((obj1,obj2) -> Integer.compare(obj1.LayerToInt(),obj2.LayerToInt())).collect(Collectors.toCollection(ArrayList::new))) {
             obj.toRender(graphics);
 

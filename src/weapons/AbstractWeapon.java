@@ -2,19 +2,17 @@ package weapons;
 
 import entitys.Player;
 import objects.Entity;
-
-import java.awt.*;
-import java.util.ArrayList;
+import org.newdawn.slick.Animation;
 
 public abstract class AbstractWeapon extends Entity {
 
     Player parent = null;
-    ArrayList<Image> animation_idle;
-    ArrayList<Image> animation_meleeattack;
-    ArrayList<Image> animation_move;
-    ArrayList<Image> animation_reload;
-    ArrayList<Image> animation_shoot;
-    ArrayList<Image> curAnim = new ArrayList<>();
+    Animation animation_idle;
+    Animation animation_meleeattack;
+    Animation animation_move;
+    Animation animation_reload;
+    Animation animation_shoot;
+    Animation curAnim = new Animation();
     public abstract int animation_idle_length();
     public abstract int animation_meleeattack_length();
     public abstract int animation_move_length();
@@ -33,7 +31,9 @@ public abstract class AbstractWeapon extends Entity {
     final int tickrateAnim = 10;
     public int frameAnim = 0;
     public int frameCount = 0;
-    public int waitFactor = 0;
+    public float lastFrame;
+    public int waitFactor = 1;
+    public boolean breakAnimation = false;
     int lastParentState = 0;
 
     //

@@ -1,11 +1,13 @@
 package weapons;
 
 import entitys.Player;
-import render.graphicmath;
+import org.newdawn.slick.Animation;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import resources.ResourceManager;
+import world.Map;
 
-import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 public class rifle extends AbstractWeapon {
@@ -22,8 +24,9 @@ public class rifle extends AbstractWeapon {
         } catch (Exception e){
             e.printStackTrace();
         }
-        curAnim = new ArrayList<>(animation_idle);
+        curAnim = animation_idle;
         frameCount = animation_idle_length();
+        waitFactor = 1;
 
 
         cdl.countDown();
@@ -32,31 +35,42 @@ public class rifle extends AbstractWeapon {
     @Override
     public void loadAnimations() throws Exception{
 
-        if(animation_idle_length() > 0)
-            animation_idle = new ArrayList<>(ResourceManager
+        ArrayList<Image> temp;
+        if(animation_idle_length() > 0) {
+            temp = new ArrayList<>(ResourceManager
                     .loadImageCollection("Top_Down_Survivor/rifle/idle/survivor-idle_rifle_"
-                            ,".png"
-                            ,animation_idle_length()));
-        if(animation_meleeattack_length() > 0)
-            animation_meleeattack = new ArrayList<>(ResourceManager
+                            , ".png"
+                            , animation_idle_length()));
+            animation_idle = new Animation(temp.toArray(new org.newdawn.slick.Image[temp.size()]),50,false);
+        }
+        if(animation_meleeattack_length() > 0) {
+            temp = new ArrayList<>(ResourceManager
                     .loadImageCollection("Top_Down_Survivor/rifle/meleeattack/survivor-meleeattack_rifle_"
-                            ,".png"
-                            ,animation_meleeattack_length()));
-        if(animation_move_length() > 0)
-            animation_move = new ArrayList<>(ResourceManager
+                            , ".png"
+                            , animation_meleeattack_length()));
+            animation_meleeattack = new Animation(temp.toArray(new org.newdawn.slick.Image[temp.size()]),50,false);
+        }
+        if(animation_move_length() > 0) {
+            temp = new ArrayList<>(ResourceManager
                     .loadImageCollection("Top_Down_Survivor/rifle/move/survivor-move_rifle_"
-                            ,".png"
-                            ,animation_move_length()));
-        if(animation_reload_length() > 0)
-            animation_reload = new ArrayList<>(ResourceManager
+                            , ".png"
+                            , animation_move_length()));
+            animation_move = new Animation(temp.toArray(new org.newdawn.slick.Image[temp.size()]),50,false);
+        }
+        if(animation_reload_length() > 0) {
+            temp = new ArrayList<>(ResourceManager
                     .loadImageCollection("Top_Down_Survivor/rifle/reload/survivor-reload_rifle_"
-                            ,".png"
-                            ,animation_reload_length()));
-        if(animation_shoot_length() > 0)
-            animation_shoot = new ArrayList<>(ResourceManager
+                            , ".png"
+                            , animation_reload_length()));
+            animation_reload = new Animation(temp.toArray(new org.newdawn.slick.Image[temp.size()]),50,false);
+        }
+        if(animation_shoot_length() > 0) {
+            temp = new ArrayList<>(ResourceManager
                     .loadImageCollection("Top_Down_Survivor/rifle/shoot/survivor-shoot_rifle_"
-                            ,".png"
-                            ,animation_shoot_length()));
+                            , ".png"
+                            , animation_shoot_length()));
+            animation_shoot = new Animation(temp.toArray(new org.newdawn.slick.Image[temp.size()]),50,false);
+        }
     }
 
     @Override
@@ -100,7 +114,8 @@ public class rifle extends AbstractWeapon {
     }
 
     @Override
-    public void toRender(Graphics2D g) {
+    public void toRender(Graphics g) {
+
 
         if(parent == null) return;
 
@@ -115,28 +130,30 @@ public class rifle extends AbstractWeapon {
 
         }
 
-        AffineTransform at = graphicmath.createRotation(parent.getYaw(),parent.getLocation());
-        AffineTransform backup = g.getTransform();
-        g.setTransform(at);
+
+        g.translate(-(Map.location.getX()), -(Map.location.getY()));
+        g.rotate(parent.getLocation().getX(),parent.getLocation().getY(),parent.getYaw());
+
 
         synchronized (this) {
-            if (curAnim.size() > 0) {
+            if (curAnim.getFrameCount() > 0) {
 
                 int meleeAnimOffX = 114;
                 int offX = lastParentState == Player.MELEEATTACK ? meleeAnimOffX : AnimOffX;
                 int meleeAnimOffY = 202;
                 int offY = lastParentState == Player.MELEEATTACK ? meleeAnimOffY : AnimOffY;
 
-                g.drawImage(curAnim.get(frameAnim)
-                        , (int) parent.getLocation().x - offX
-                        , (int) parent.getLocation().y - offY
-                        , null);
+                g.drawImage(curAnim.getCurrentFrame()
+                        , (int) parent.getLocation().getX() - offX
+                        , (int) parent.getLocation().getY() - offY
+                        );
             }
         }
 
 
-
-        g.setTransform(backup);
+        g.rotate(parent.getLocation().getX(),parent.getLocation().getY(),-parent.getYaw());
+        g.translate(Map.location.getX(), Map.location.getY());
+        g.flush();
     }
 
     @Override
@@ -145,7 +162,7 @@ public class rifle extends AbstractWeapon {
     }
 
     @Override
-    public void toThread(int tick) {
+    public void toThread(GameContainer container, int delta) {
 
         if(parent == null) return;
 
@@ -161,14 +178,13 @@ public class rifle extends AbstractWeapon {
         }
 
         synchronized (this) {
+
             handleCurAnim();
+            lastFrame += delta;
+            curAnim.update(delta);
 
-
-        if(tick % tickrateAnim == 0) {
-
-            frameAnim = (frameAnim + 1) % frameCount;
-
-        }
+            if(curAnim.getFrameCount()*curAnim.getDuration(0) < lastFrame)
+                waitFactor += 1;
         }
 
     }
@@ -181,38 +197,44 @@ public class rifle extends AbstractWeapon {
 
         if(curState != lastParentState) {
 
-            curAnim = new ArrayList<>();
+            curAnim = new Animation();
             lastParentState = curState;
+            lastFrame = 0;
 
             if (curState == Player.IDLE) {
-                curAnim = new ArrayList<>(animation_idle);
+                curAnim = animation_idle;
                 frameCount = animation_idle_length();
                 frameAnim = 0;
                 waitFactor = 0;
+                breakAnimation = true;
             } else
             if (curState == Player.MOVE) {
-                curAnim = new ArrayList<>(animation_move);
+                curAnim = animation_move;
                 frameCount = animation_move_length();
                 frameAnim = 0;
                 waitFactor = 0;
+                breakAnimation = true;
             } else
             if (curState == Player.RELOAD) {
-                curAnim = new ArrayList<>(animation_reload);
+                curAnim = animation_reload;
                 frameCount = animation_reload_length();
                 frameAnim = 0;
-                waitFactor = 1;
+                waitFactor = 0;
+                breakAnimation = false;
             } else
             if (curState == Player.MELEEATTACK) {
-                curAnim = new ArrayList<>(animation_meleeattack);
+                curAnim = animation_meleeattack;
                 frameCount = animation_meleeattack_length();
                 frameAnim = 0;
-                waitFactor = 1;
+                waitFactor = 0;
+                breakAnimation = false;
             } else
             if (curState == Player.SHOOT) {
-                curAnim = new ArrayList<>(animation_shoot);
+                curAnim = animation_shoot;
                 frameCount = animation_shoot_length();
                 frameAnim = 0;
-                waitFactor = 1;
+                waitFactor = 0;
+                breakAnimation = false;
             }
         }
 

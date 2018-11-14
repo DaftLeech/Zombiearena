@@ -1,33 +1,31 @@
 package entitys;
 
 import engine.Listener;
-import general.DPoint;
-import render.Camera;
-import settings.Settings;
 import objects.Entity;
-import render.Window;
+import org.newdawn.slick.*;
+import org.newdawn.slick.geom.Point;
+import render.Camera;
 import render.graphicmath;
 import resources.ResourceManager;
+import settings.Settings;
 import weapons.AbstractWeapon;
 import weapons.pistole;
 import weapons.rifle;
 import world.Map;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-public class Player extends Entity{
+public class Player extends Entity {
 
 
-    private DPoint location;
-    private double yaw;
+    private Point location;
+    private float yaw;
     private int health;
     private static BufferedImage sprite;
-    private ArrayList<Image> feetAnim_run;
-    private ArrayList<Image> curAnim = new ArrayList<>();
+    private Animation feetAnim_run;
+    private ArrayList<Image> feet;
+    private Animation curAnim = new Animation();
     private final int feetAnim_run_imageCount = 20;
     private boolean isRunning = false;
     private int frameAnim = 0;
@@ -39,6 +37,8 @@ public class Player extends Entity{
     public static final int RELOAD = 3;
     public static final int SHOOT = 4;
     private int curState = 0;
+    private final int animOffY = 70;
+    private final int animOffX = 68;
 
 
     private rifle rifleWeapon;
@@ -46,93 +46,77 @@ public class Player extends Entity{
     private AbstractWeapon curWeapon;
 
 
-
-
-
-    public Player(DPoint location) throws Exception {
+    public Player(Point location) {
         super();
 
+        this.location = location;
+        this.yaw = 0.0f;
+        this.health = 3;
 
-
-
-
-            this.location = location;
-            this.yaw = 0.0;
-            this.health = 3;
-
-            if (sprite == null) {
-
+        if (sprite == null) {
+            try {
                 sprite = ResourceManager.loadImage("Top_Down_Survivor/rifle/idle/survivor-idle_rifle_0.png");
-                feetAnim_run = new ArrayList<>(ResourceManager.loadImageCollection("Top_Down_Survivor/feet/run/survivor-run_", ".png", feetAnim_run_imageCount));
+                feet = new ArrayList<Image>(ResourceManager.loadImageCollection("Top_Down_Survivor/feet/run/survivor-run_", ".png", feetAnim_run_imageCount));
+                feetAnim_run = new Animation(feet.toArray(new Image[feet.size()]), 50, false);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-
-
-
-
-
-
-            curWeapon = null;
-
-
-            cdl.countDown();
-
-    }
-
-    @Override
-    public void toRender(Graphics2D g) {
-
-
-
-        AffineTransform at = graphicmath.createRotation(this.yaw,this.location);
-        AffineTransform backup = g.getTransform();
-
-        graphicmath.drawShadow(g,this.location);
-
-        g.setTransform(at);
-
-        int animOffY = 70;
-        int animOffX = 68;
-        if(curAnim.size() > 0)
-            g.drawImage(curAnim.get(frameAnim),(int)getLocation().x - animOffX,(int)getLocation().y - animOffY, null);
-
-
-
-
-        g.setTransform(backup);
-
-        g.setPaint(Color.RED);
-        g.drawLine((int)location.x,(int)location.y,(int)(Math.cos(Math.toRadians(-yaw+90))*(10000)+ location.x),(int)(Math.sin(Math.toRadians(-yaw+90))*(10000)+location.y));
-
-        g.setStroke(new BasicStroke(2));
-        g.setPaint(Color.RED);
-
-        g.drawLine((int)getLocation().x-5,(int)getLocation().y,(int)getLocation().x-5,(int)getLocation().y);
-        g.setPaint(Color.GREEN);
-
-        g.drawLine((int)getLocation().x,(int)getLocation().y,(int)getLocation().x,(int)getLocation().y);
-
-        g.draw(Camera.getInstance().getGlueArea());
-
-    }
-
-    @Override
-    public void toThread(int tick) {
-
-
-        handleKeyInput();
-        setYaw(Listener.getMouseCursor());
-        handleCurAnim();
-
-        int tickrateAnim = 10;
-        if(tick % tickrateAnim == 0) {
-            if (isRunning) {
-                frameAnim = (frameAnim + 1) % frameCount;
-            } else {
-                frameAnim = 0;
-            }
         }
 
+        curWeapon = null;
+        curAnim = feetAnim_run;
+
+        cdl.countDown();
+
+    }
+
+    @Override
+    public void toRender(Graphics g) {
+
+
+        g.translate(-(Map.location.getX()), -(Map.location.getY()));
+        g.rotate(this.location.getX(), this.location.getY(), this.yaw);
+
+
+        if (curAnim.getFrameCount() > 0) {
+            g.drawImage(curAnim.getCurrentFrame(), getLocation().getX() - animOffX, getLocation().getY() - animOffY);
+
+        }
+
+
+        g.setColor(Color.red);
+        g.drawLine((int) location.getX(), (int) location.getY(), (int) (Math.cos(Math.toRadians(-yaw + 90)) * (10000) + location.getX()), (int) (Math.sin(Math.toRadians(-yaw + 90)) * (10000) + location.getY()));
+
+        g.setLineWidth(2f);
+        g.setColor(Color.red);
+
+        g.drawLine((int) getLocation().getX() - 5, (int) getLocation().getY(), (int) getLocation().getX() - 5, (int) getLocation().getY());
+        g.setColor(Color.red);
+
+
+        g.rotate(this.location.getX(), this.location.getY(), -this.yaw);
+
+        Point dir = new Point((float) Math.cos(Math.toRadians(yaw)), (float) Math.sin(Math.toRadians(yaw)));
+
+        g.drawLine(getLocation().getX(), getLocation().getY(), getLocation().getX() + dir.getX() * 30F, getLocation().getY() + dir.getY() * 30F);
+
+        g.translate(Map.location.getX(), Map.location.getY());
+
+        g.flush();
+
+    }
+
+    @Override
+    public void toThread(GameContainer container, int delta) {
+
+        Input input = container.getInput();
+
+        handleKeyInput(input, delta);
+
+        setYaw(new Point(input.getMouseX(), input.getMouseY()));
+        handleCurAnim();
+        curAnim.update(delta);
 
 
 
@@ -144,152 +128,148 @@ public class Player extends Entity{
         return 0;
     }
 
-    public DPoint getLocation(){
+    public Point getLocation() {
         return this.location;
     }
 
-    private void setLocation(DPoint location){
+    private void setLocation(Point location) {
         this.location = location;
     }
 
-    private void setLocation(double x, double y) { this.location = new DPoint(x,y);}
+    private void setLocation(float x, float y) {
+        this.location = new Point(x, y);
+    }
 
-    public void setHealth(int health){
+    public void setHealth(int health) {
         this.health = health;
     }
 
-    public void removeHealth(int value){
+    public void removeHealth(int value) {
         this.health -= value;
     }
 
-    public void addHealth(int value){
+    public void addHealth(int value) {
         this.health += value;
     }
 
-    public int getHealth(){
+    public int getHealth() {
         return this.health;
     }
 
-    public double getYaw(){
+    public float getYaw() {
         return this.yaw;
     }
 
-    public void setYaw(int value){
+    public void setYaw(int value) {
         this.yaw = value;
     }
 
-    private void setYaw(Point pLookAt){
-        this.yaw = Math.toDegrees(Math.atan2(pLookAt.x - this.location.x, pLookAt.y- this.location.y));
+    private void setYaw(Point pLookAt) {
+        this.yaw = graphicmath.getTargetAngle(this.location.getX(), this.location.getY(), Map.location.getX() + pLookAt.getX(), Map.location.getY() + pLookAt.getY());
+        //(float)Math.toDegrees(Math.atan2((pLookAt.getX()+Map.location.getX() - this.location.getX()), (pLookAt.getY()+Map.location.getY()- this.location.getY()))*-1)+90;
     }
 
-    private void setIsShooting(Boolean value){
+    private void setIsShooting(Boolean value) {
         Boolean isShooting = value;
     }
 
-    private void handleKeyInput(){
+    private void handleKeyInput(Input input, int delta) {
 
-        synchronized (Listener.getKeyCodes()){
+        int moveMod = (int) ((Listener.getKeyCodes().size() == 1 ? 2 : Math.sqrt(4)));
+        if (input.isKeyDown(Input.KEY_ESCAPE)) System.exit(0);
+        synchronized (this) {
 
-            int moveMod = (int) ((Listener.getKeyCodes().size() == 1 ? 2 : Math.sqrt(4)) );
+            if (curWeapon != null) {
+                synchronized (curWeapon) {
+                    if (0 < curWeapon.waitFactor || curWeapon.breakAnimation) {
+                        curState = IDLE;
+                        this.isRunning = false;
+                        if (input.isKeyDown(Input.KEY_W) || input.isKeyDown(Input.KEY_S) || input.isKeyDown(Input.KEY_A) || input.isKeyDown(Input.KEY_D)) {
+                            this.isRunning = true;
+                            curState = MOVE;
+                        }
+                        if (input.isKeyDown(Input.KEY_R)) {
 
-            synchronized (this) {
+                            curState = RELOAD;
+                        }
+                        if (input.isKeyDown(Input.KEY_V)) {
 
-                if(curWeapon != null) {
-                    synchronized (curWeapon) {
-                        if (curWeapon.frameAnim + 1 >= curWeapon.frameCount * curWeapon.waitFactor) {
-                            curState = IDLE;
-                            this.isRunning = false;
-                            if (Listener.getKeyCodes().stream().anyMatch(Listener::isMovementKeyCode)) {
-                                this.isRunning = true;
-                                curState = MOVE;
-                            }
-                            if (Listener.getKeyCodes().stream().anyMatch(k -> k == KeyEvent.VK_R)) {
-
-                                curState = RELOAD;
-                            }
-                            if (Listener.getKeyCodes().stream().anyMatch(k -> k == KeyEvent.VK_V)) {
-
-                                curState = MELEEATTACK;
-                            }
-                            if (Listener.isMousePressed()) {
-                                setIsShooting(true);
-                                curState = SHOOT;
-                            }
+                            curState = MELEEATTACK;
+                        }
+                        if (input.isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)) {
+                            setIsShooting(true);
+                            curState = SHOOT;
                         }
                     }
                 }
+            }
 
 
-                    for (int KeyCode : Listener.getKeyCodes()) {
+            if (Settings.boolByName("MovementType")) {
 
-                        if (Settings.boolByName("MovementType")) {
+                if (input.isKeyDown(Input.KEY_W)) {
+                    setLocation(getLocation().getX(), getLocation().getY() - moveMod);
+                }
 
-                            if (KeyCode == KeyEvent.VK_W && getLocation().y > 0) {
-                                setLocation(getLocation().x, getLocation().y - moveMod);
-                            }
+                if (input.isKeyDown(Input.KEY_S)) {
+                    setLocation(getLocation().getX(), getLocation().getY() + moveMod);
+                }
 
-                            if (KeyCode == KeyEvent.VK_S && getLocation().y < Window.HEIGHT) {
-                                setLocation(getLocation().x, getLocation().y + moveMod);
-                            }
+                if (input.isKeyDown(Input.KEY_A)) {
+                    setLocation(getLocation().getX() - moveMod, getLocation().getY());
+                }
 
-                            if (KeyCode == KeyEvent.VK_A && getLocation().x > 0) {
-                                setLocation(getLocation().x - moveMod, getLocation().y);
-                            }
+                if (input.isKeyDown(Input.KEY_D)) {
+                    setLocation(getLocation().getX() + moveMod, getLocation().getY());
+                }
+            } else {
 
-                            if (KeyCode == KeyEvent.VK_D && getLocation().x < Window.WIDTH) {
-                                setLocation(getLocation().x + moveMod, getLocation().y);
-                            }
-                        } else {
-
-                            synchronized (Map.location) {
-                                if (KeyCode == KeyEvent.VK_W) {
-                                    DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw)), Math.cos(Math.toRadians(yaw)));
-                                    handleMoveDir(dir);
-                                }
-                                if (KeyCode == KeyEvent.VK_S) {
-                                    DPoint dir = new DPoint(-Math.sin(Math.toRadians(yaw)), -Math.cos(Math.toRadians(yaw)));
-                                    handleMoveDir(dir);
-                                }
-                                if (KeyCode == KeyEvent.VK_A) {
-                                    DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw + 90)), Math.cos(Math.toRadians(yaw + 90)));
-                                    handleMoveDir(dir);
-                                }
-                                if (KeyCode == KeyEvent.VK_D) {
-                                    DPoint dir = new DPoint(Math.sin(Math.toRadians(yaw - 90)), Math.cos(Math.toRadians(yaw - 90)));
-                                    handleMoveDir(dir);
-                                }
-                            }
-                        }
-
-                        if (KeyCode == Settings.keyByName("RifleKey")) {
-                            curWeapon = rifleWeapon;
-                        }
-
-                        if (KeyCode == Settings.keyByName("PistoleKey")) {
-                            curWeapon = pistoleWeapon;
-                        }
-
+                synchronized (Map.location) {
+                    if (input.isKeyDown(Input.KEY_W)) {
+                        Point dir = new Point((float) Math.cos(Math.toRadians(yaw)), (float) Math.sin(Math.toRadians(yaw)));
+                        handleMoveDir(dir, delta);
+                    }
+                    if (input.isKeyDown(Input.KEY_S)) {
+                        Point dir = new Point(-(float) Math.cos(Math.toRadians(yaw)), -(float) Math.sin(Math.toRadians(yaw)));
+                        handleMoveDir(dir, delta);
+                    }
+                    if (input.isKeyDown(Input.KEY_A)) {
+                        Point dir = new Point((float) Math.cos(Math.toRadians(yaw - 90)), (float) Math.sin(Math.toRadians(yaw - 90)));
+                        handleMoveDir(dir, delta);
+                    }
+                    if (input.isKeyDown(Input.KEY_D)) {
+                        Point dir = new Point((float) Math.cos(Math.toRadians(yaw + 90)), (float) Math.sin(Math.toRadians(yaw + 90)));
+                        handleMoveDir(dir, delta);
                     }
                 }
+            }
+
+            if (input.isKeyDown(Settings.keyByName("RifleKey"))) {
+                curWeapon = rifleWeapon;
+            }
+
+            if (input.isKeyDown(Settings.keyByName("PistoleKey"))) {
+                curWeapon = pistoleWeapon;
+            }
 
 
         }
 
     }
 
-    private void handleCurAnim(){
+    private void handleCurAnim() {
 
-        curAnim = new ArrayList<>();
+        curAnim = new Animation();
 
-        if(isRunning){
-            curAnim = new ArrayList<>(feetAnim_run);
+        if (isRunning) {
+            curAnim = feetAnim_run;
             frameCount = feetAnim_run_imageCount;
         }
 
     }
 
 
-    public void handleMouseInput(){
+    public void handleMouseInput() {
 
 
         setYaw(Listener.getMouseCursor());
@@ -297,35 +277,36 @@ public class Player extends Entity{
 
     }
 
-    public int getCurState(){
+    public int getCurState() {
         return curState;
     }
 
-    public AbstractWeapon getCurWeapon(){
+    public AbstractWeapon getCurWeapon() {
         return curWeapon;
     }
 
-    public void setCurWeapon(AbstractWeapon weap){
+    public void setCurWeapon(AbstractWeapon weap) {
         this.curWeapon = weap;
     }
 
-    public void setRifle(rifle rifle){
+    public void setRifle(rifle rifle) {
         this.rifleWeapon = rifle;
     }
 
-    public void setPistole(pistole pistole){
+    public void setPistole(pistole pistole) {
         this.pistoleWeapon = pistole;
     }
 
-    private void handleMoveDir(DPoint dir){
-        float speed = 3F;
-        DPoint newLoc = new DPoint(location.x + dir.x * speed, location.y + dir.y * speed);
-        if(Map.contains(newLoc)) {
-            if (Camera.getInstance().getGlueArea().contains(newLoc.toPoint())) {
+    private void handleMoveDir(Point dir, int delta) {
+        float speed = 0.3F * delta;
+        Point newLoc = new Point(location.getX() + dir.getX() * speed, location.getY() + dir.getY() * speed);
+        if (Map.contains(newLoc)) {
+            if (Camera.getInstance().getGlueArea().contains(newLoc)) {
                 setLocation(newLoc);
             } else {
-                DPoint newMapLoc = new DPoint(Map.location.x + dir.x * speed, Map.location.y + dir.y * speed);
+                Point newMapLoc = new Point(Map.location.getX() + dir.getX() * speed, Map.location.getY() + dir.getY() * speed);
                 Map.location = newMapLoc;
+                setLocation(newLoc);
             }
         }
     }

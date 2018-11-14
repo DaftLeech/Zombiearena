@@ -1,6 +1,7 @@
 package render;
 
-import java.awt.*;
+
+import org.newdawn.slick.geom.Rectangle;
 
 public class Camera {
 

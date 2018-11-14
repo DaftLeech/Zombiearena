@@ -1,10 +1,9 @@
 package render;
 
 import engine.IThreadable;
-
-import java.awt.*;
+import org.newdawn.slick.Graphics;
 
 public interface IRenderable extends IThreadable {
 
-    void toRender(Graphics2D g);
+    void toRender(Graphics g);
 }

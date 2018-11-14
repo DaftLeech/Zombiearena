@@ -1,7 +1,5 @@
 package render;
 
-import engine.Listener;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -21,6 +19,9 @@ public class Window extends JFrame {
         Toolkit defToolkit = Toolkit.getDefaultToolkit();
         WIDTH = defToolkit.getScreenSize().width;
         HEIGHT = defToolkit.getScreenSize().height;
+
+        renderer = new Render(this);
+        /*
         setBackground(Color.BLACK);
 
 
@@ -85,7 +86,7 @@ public class Window extends JFrame {
         DisplayMode best = getBestDisplayMode(device);
         if (best != null) {
             device.setDisplayMode(best);
-        }
+        }*/
     }
 
 }

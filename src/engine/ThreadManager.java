@@ -1,14 +1,14 @@
 package engine;
 
+import objects.GameObject;
 import render.Render;
 import render.Window;
-import objects.GameObject;
 
 import java.util.ArrayList;
 
 public class ThreadManager {
 
-    private static ArrayList<GameObject> objects;
+    public static ArrayList<GameObject> objects;
     private Thread paintThread;
     private Thread tickThread;
     private final int maxTick = 1000;
@@ -20,8 +20,8 @@ public class ThreadManager {
         objects = new ArrayList<>();
 
 
-        startPaintThread();
-        startTickThread();
+        //startPaintThread();
+        //startTickThread();
 
     }
 
@@ -91,7 +91,7 @@ public class ThreadManager {
                                 e.printStackTrace();
                             }
                             if (obj.getTickRate() != -2) {
-                                obj.toThread(tick);
+                                obj.toThread(null, tick);
 
                             }
 

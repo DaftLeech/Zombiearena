@@ -1,6 +1,9 @@
 package world;
 
-import java.awt.*;
+
+import org.newdawn.slick.geom.Point;
+import org.newdawn.slick.geom.Rectangle;
+
 import java.util.ArrayList;
 
 public class Dungeon {
@@ -14,7 +17,7 @@ public class Dungeon {
     public Dungeon(Rectangle size, double roomPerc, int deepth){
 
         this.roomPerc = roomPerc;
-        this.pathWidth = (int)(size.width / (Math.pow(2,deepth) / 2) * 0.2);
+        this.pathWidth = (int)(size.getWidth() / (Math.pow(2,deepth) / 2) * 0.2);
         System.out.println(pathWidth);
         genRooms(size,deepth);
 
@@ -30,19 +33,19 @@ public class Dungeon {
         Rectangle room1;
         Rectangle room2;
 
-        if(parent.width > parent.height){
+        if(parent.getWidth() > parent.getHeight()){
 
-            int split = (int) (parent.width / 2 - parent.width * 0.025 + Math.random() * (parent.width * 0.05));
-            room1 = new Rectangle(parent.x, parent.y, split, parent.height);
-            room2 = new Rectangle(parent.x + split, parent.y, parent.width - split, parent.height);
+            int split = (int) (parent.getWidth() / 2 - parent.getWidth() * 0.025 + Math.random() * (parent.getWidth() * 0.05));
+            room1 = new Rectangle(parent.getX(), parent.getY(), split, parent.getHeight());
+            room2 = new Rectangle(parent.getX() + split, parent.getY(), parent.getWidth() - split, parent.getHeight());
 
 
 
         }else {
 
-            int split = (int) (parent.height / 2 - parent.height * 0.025 + Math.random() * (parent.height * 0.05));
-            room1 = new Rectangle(parent.x, parent.y, parent.width, split);
-            room2 = new Rectangle(parent.x, parent.y + split, parent.width, parent.height - split);
+            int split = (int) (parent.getHeight() / 2 - parent.getHeight() * 0.025 + Math.random() * (parent.getHeight() * 0.05));
+            room1 = new Rectangle(parent.getX(), parent.getY(), parent.getWidth(), split);
+            room2 = new Rectangle(parent.getX(), parent.getY() + split, parent.getWidth(), parent.getHeight() - split);
 
 
         }
@@ -77,12 +80,12 @@ public class Dungeon {
 
         for(Rectangle room : rooms){
 
-            int xAdd = (int)( room.width * addPercMax * Math.random());
-            int yAdd = (int)( room.height * addPercMax * Math.random());
-            room.x += xAdd;
-            room.y += yAdd;
-            room.width  -= (xAdd +(int)( room.width * addPercMax * Math.random()));
-            room.height -= (yAdd + (int)( room.height * addPercMax * Math.random()));
+            int xAdd = (int)( room.getWidth() * addPercMax * Math.random());
+            int yAdd = (int)( room.getHeight()* addPercMax * Math.random());
+            room.setX(room.getX()+ xAdd);
+            room.setY(room.getY()+ yAdd);
+            room.setWidth(room.getWidth()  - (xAdd +(int)( room.getWidth() * addPercMax * Math.random())));
+            room.setHeight(room.getHeight() - (yAdd + (int)( room.getHeight() * addPercMax * Math.random())));
 
             //System.out.println("X: "+String.valueOf(room.x)+"Y: "+String.valueOf(room.y)+"W: "+String.valueOf(room.width)+"H: "+String.valueOf(room.height));
 
@@ -99,13 +102,13 @@ public class Dungeon {
             Rectangle room1 = rooms.get(i);
             Rectangle room2 = rooms.get(i-1);
 
-            Point center1 = new Point(room1.x + room1.width/2, room1.y + room1.height/2);
-            Point center2 = new Point(room2.x + room2.width/2, room2.y + room2.height/2);
+            Point center1 = new Point(room1.getX() + room1.getWidth()/2, room1.getY() + room1.getHeight()/2);
+            Point center2 = new Point(room2.getX() + room2.getWidth()/2, room2.getY() + room2.getHeight()/2);
 
-            int x=Math.min(center1.x, center2.x);
-            int y=Math.min(center1.y, center2.y);
-            int width=Math.max(Math.abs(center1.x - center2.x),pathWidth);
-            int height=Math.max(Math.abs(center1.y - center2.y),pathWidth);
+            int x=Math.min((int)center1.getX(), (int)center2.getX());
+            int y=Math.min((int)center1.getY(), (int)center2.getY());
+            int width=Math.max(Math.abs((int)center1.getX() - (int)center2.getX()),pathWidth);
+            int height=Math.max(Math.abs((int)center1.getY() - (int)center2.getY()),pathWidth);
 
             Rectangle path = new Rectangle(x, y, width, height);
 

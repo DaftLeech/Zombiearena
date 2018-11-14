@@ -40,4 +40,25 @@ public class graphicmath {
 
         return null;
     }
+
+    public static int PointDistance(Point p1, Point p2){
+        return Math.abs(p1.x-p2.x+p1.y-p2.y);
+    }
+
+    public static int PointDistance(int x1, int y1, int x2, int y2){
+        return PointDistance(new Point(x1,y1),new Point(x2,y2));
+    }
+
+    public static float getDistanceBetween(float startX, float startY, float endX, float endY) {
+        float dx = endX - startX;
+        float dy = endY - startY;
+        return (float)Math.sqrt(dx*dx + dy*dy);
+    }
+
+    public static float getTargetAngle(float startX, float startY, float targetX, float targetY) {
+        float dx = targetX - startX;
+        float dy = targetY - startY;
+        return (float)Math.toDegrees(Math.atan2(dy, dx));
+    }
+
 }

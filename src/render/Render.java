@@ -5,6 +5,7 @@ import objects.GameObject;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import static java.awt.RenderingHints.*;
 
@@ -13,7 +14,7 @@ public class Render {
     public static int cur_fps;
     private BufferStrategy buffStrat;
     private final Window win;
-    private static ArrayList<GameObject> listDrawables;
+    public static ArrayList<GameObject> listDrawables;
 
     public Render(Window win){
 
@@ -53,8 +54,8 @@ public class Render {
 
 
     private void createBuffer(){
-        win.createBufferStrategy(2);
-        this.buffStrat = win.getBufferStrategy();
+        //win.createBufferStrategy(2);
+        //this.buffStrat = win.getBufferStrategy();
 
     }
 
@@ -82,9 +83,11 @@ public class Render {
 
         synchronized (listDrawables){
 
-            for(GameObject obj : listDrawables){
+            for(GameObject obj : listDrawables.stream().sorted((obj1,obj2) -> Integer.compare(obj1.LayerToInt(),obj2.LayerToInt())).collect(Collectors.toCollection(ArrayList::new))){
 
-                obj.toRender(g);
+                //synchronized (obj) {
+                    obj.toRender(null);
+                //}
 
             }
 

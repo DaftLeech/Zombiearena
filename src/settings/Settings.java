@@ -3,9 +3,10 @@ package settings;
 import engine.Listener;
 import engine.ThreadManager;
 import objects.GameObject;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
 import render.Render;
 
-import java.awt.*;
 import java.util.HashMap;
 
 public class Settings extends GameObject {
@@ -20,11 +21,12 @@ public class Settings extends GameObject {
        ThreadManager.addToThreadList(this);
        Render.addToDrawables(this);
        cdl.countDown();
+       layer = Layer.HUD;
    }
 
 
     @Override
-    public void toRender(Graphics2D g) {
+    public void toRender(org.newdawn.slick.Graphics g) {
 
         int yOffset = 100;
 
@@ -33,12 +35,12 @@ public class Settings extends GameObject {
             String key = module.getName();
             String val = module.getVal();
 
-            int keySize = g.getFontMetrics(g.getFont()).stringWidth(key);
-            int valSize = g.getFontMetrics(g.getFont()).stringWidth(val);
+            int keySize = g.getFont().getWidth(key);
+            int valSize = g.getFont().getWidth(val);
 
 
 
-            g.setPaint(Color.BLACK);
+            g.setColor(Color.black);
             g.drawString(key, render.Window.WIDTH - valSize - 10 - keySize - 10, yOffset);
             g.drawString(val, render.Window.WIDTH - valSize - 10, yOffset);
 
@@ -53,8 +55,8 @@ public class Settings extends GameObject {
     }
 
     @Override
-    public void toThread(int tick) {
-        synchronized (Listener.getKeyCodes()){
+    public void toThread(GameContainer container, int delta) {
+
 
 
             for(int KeyCode : Listener.getKeyCodes()){
@@ -75,7 +77,7 @@ public class Settings extends GameObject {
                 }
 
 
-            }
+
 
 
 

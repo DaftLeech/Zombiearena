@@ -1,6 +1,6 @@
 package settings;
 
-import java.awt.event.KeyEvent;
+import org.newdawn.slick.Input;
 
 public class SettMovementMod extends AbstractSettingModule {
 
@@ -52,7 +52,7 @@ public class SettMovementMod extends AbstractSettingModule {
 
     @Override
     public int getKey() {
-        int keyCode = KeyEvent.VK_M;
+        int keyCode = Input.KEY_M;
         return keyCode;
     }
 }

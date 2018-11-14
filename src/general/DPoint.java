@@ -17,4 +17,5 @@ public class DPoint {
         return new Point((int)x,(int)y);
     }
 
+    public org.newdawn.slick.geom.Point toFPoint() {return new org.newdawn.slick.geom.Point((float)x,(float)y);}
 }

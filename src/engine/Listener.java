@@ -1,6 +1,7 @@
 package engine;
 
-import java.awt.*;
+import org.newdawn.slick.geom.Point;
+
 import java.awt.event.*;
 import java.util.ArrayList;
 
@@ -14,7 +15,7 @@ public class Listener implements KeyListener, MouseMotionListener, MouseListener
     public void mouseDragged(MouseEvent arg0) {
 
 
-        p_MouseCursor = arg0.getPoint();
+        p_MouseCursor = new Point(arg0.getPoint().x,arg0.getPoint().y);
 
 
     }
@@ -24,7 +25,7 @@ public class Listener implements KeyListener, MouseMotionListener, MouseListener
 
 
 
-        p_MouseCursor = arg0.getPoint();
+        p_MouseCursor = new Point(arg0.getPoint().x,arg0.getPoint().y);
 
     }
 

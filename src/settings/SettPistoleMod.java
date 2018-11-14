@@ -1,12 +1,13 @@
 package settings;
 
-import java.awt.event.KeyEvent;
+
+import org.newdawn.slick.Input;
 
 public class SettPistoleMod extends AbstractSettingModule {
 
-    private final int keyCode = KeyEvent.VK_2;
+    private final int keyCode = Input.KEY_2;
     public static final String name = "PistoleKey";
-    private final String valString = KeyEvent.getKeyText(keyCode);
+    private final String valString = Input.getKeyName(keyCode);
     private boolean isLocked = false;
 
     @Override

@@ -21,8 +21,7 @@ public class Zombie extends Entity {
     private static Animation idle_Anim = new Animation();
     private static Animation move_Anim = new Animation();
     private static Animation attack_Anim = new Animation();
-    private Point location;
-    private float yaw;
+
     private int health;
     private STATES state = STATES.IDLE;
     private STATES lastState = state;

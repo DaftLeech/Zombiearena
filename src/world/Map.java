@@ -1,16 +1,14 @@
 package world;
 
 
+import engine.ThreadManager;
 import general.Zombiearena;
 import objects.GameObject;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.geom.GeomUtil;
-import org.newdawn.slick.geom.Point;
-import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.geom.Shape;
+import org.newdawn.slick.geom.*;
 import render.Render;
 import java.util.ArrayList;
 
@@ -22,6 +20,7 @@ public class Map extends GameObject {
     public static Point location = new Point(0f,0f);
     private static Shape shape;
     private Rectangle size;
+    public static ArrayList<Rectangle> allRooms;
 
 
 
@@ -46,7 +45,7 @@ public class Map extends GameObject {
         shape = dngn.getFinalRooms().get(0);
         System.out.println(shape.getPointCount());
 
-        ArrayList<Rectangle> allRooms = new ArrayList<>(dngn.getFinalRooms());
+        allRooms = new ArrayList<>(dngn.getFinalRooms());
         allRooms.addAll(dngn.getPaths());
         System.out.println(allRooms.size()*4);
         ArrayList<Integer> roomIDs = new ArrayList<>();
@@ -75,6 +74,7 @@ public class Map extends GameObject {
         System.out.println(shape.getPointCount());
 
         Render.addToDrawables(this);
+        ThreadManager.addToThreadList(this);
 
         layer = Layer.BASE;
         cdl.countDown();
@@ -97,7 +97,19 @@ public class Map extends GameObject {
                 g.texture(path,tile);
             }
 
+            g.setColor(Color.red);
+            for(Rectangle room : Map.allRooms) {
 
+                Line[] lines = new Line[4];
+                lines[0] = new Line(room.getX(),room.getY(),room.getWidth()+room.getX(),room.getY());
+                lines[1] = new Line(room.getX(),room.getY()+room.getHeight(),room.getX(),room.getY());
+                lines[2] = new Line(room.getX()+room.getWidth(),room.getY(),room.getWidth()+room.getX(),room.getHeight()+room.getY());
+                lines[3] = new Line(room.getX(),room.getY()+room.getHeight(),room.getX()+room.getWidth(),room.getY()+room.getHeight());
+
+                for(Line line : lines) {
+                    g.draw(line);
+                }
+            }
 
             g.flush();
 
@@ -178,7 +190,7 @@ public class Map extends GameObject {
         return dngn.getPaths().stream().anyMatch(r -> r.contains(p)) || dngn.getFinalRooms().stream().anyMatch(r -> r.contains(p));
     }
 
-    public static boolean contains(int x, int y){
+    public static boolean contains(float x, float y){
         Point p = new Point(x,y);
         return dngn.getPaths().stream().anyMatch(r -> r.contains(p)) || dngn.getFinalRooms().stream().anyMatch(r -> r.contains(p));
     }

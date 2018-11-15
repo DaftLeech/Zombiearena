@@ -3,6 +3,7 @@ package entitys;
 import engine.Listener;
 import objects.Entity;
 import org.newdawn.slick.*;
+import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Point;
 import render.Camera;
 import render.graphicmath;
@@ -19,8 +20,7 @@ import java.util.ArrayList;
 public class Player extends Entity {
 
 
-    private Point location;
-    private float yaw;
+
     private int health;
     private static BufferedImage sprite;
     private Animation feetAnim_run;
@@ -97,6 +97,7 @@ public class Player extends Entity {
 
 
         g.rotate(this.location.getX(), this.location.getY(), -this.yaw);
+
 
         Point dir = new Point((float) Math.cos(Math.toRadians(yaw)), (float) Math.sin(Math.toRadians(yaw)));
 

@@ -157,6 +157,11 @@ public class rifle extends AbstractWeapon {
             g.draw(hitbox);
 
         g.rotate(parent.getLocation().getX(),parent.getLocation().getY(),-parent.getYaw());
+
+        if(hitboxes.size()>0) {
+            Circle hitbox = hitboxes.get(0);
+            g.drawLine(hitbox.getX()+hitbox.radius + hitbox.radius * (float) Math.cos(Math.toRadians(parent.yaw)), hitbox.getY()+hitbox.radius + hitbox.radius * (float) Math.sin(Math.toRadians(parent.yaw)),hitbox.getX()+hitbox.radius,hitbox.getY()+hitbox.radius);
+        }
         g.translate(Map.location.getX(), Map.location.getY());
         g.flush();
     }
@@ -182,11 +187,13 @@ public class rifle extends AbstractWeapon {
                 return;
         }
 
+
         synchronized (this) {
 
             handleCurAnim();
             lastFrame += delta;
             curAnim.update(delta);
+            this.yaw = parent.yaw;
 
             if(curAnim.getFrameCount()*curAnim.getDuration(0) < lastFrame)
                 waitFactor += 1;

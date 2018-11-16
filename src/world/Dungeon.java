@@ -102,8 +102,46 @@ public class Dungeon {
             Rectangle room1 = rooms.get(i);
             Rectangle room2 = rooms.get(i-1);
 
-            Point center1 = new Point(room1.getX() + room1.getWidth()/2, room1.getY() + room1.getHeight()/2);
-            Point center2 = new Point(room2.getX() + room2.getWidth()/2, room2.getY() + room2.getHeight()/2);
+            float r1XOff = 0;
+            float r1YOff = 0;
+            float r2XOff = 0;
+            float r2YOff = 0;
+            if(room1.getWidth()>room1.getHeight()){
+                if(room1.getY()<room2.getY()){
+
+                    r1XOff = room1.getWidth()/2;
+                    r1YOff = room1.getHeight();
+                    r2XOff = room2.getWidth()/2;
+                    r2YOff = 0;
+
+                } else {
+
+                    r1XOff = room1.getWidth()/2;
+                    r1YOff = 0;
+                    r2XOff = room2.getWidth()/2;
+                    r2YOff = room2.getHeight();
+
+                }
+            } else {
+                if(room1.getX()<room2.getX()){
+
+                    r1XOff = room1.getWidth();
+                    r1YOff = room1.getHeight()/2;
+                    r2XOff = 0;
+                    r2YOff = room2.getHeight()/2;
+
+                }else {
+
+                    r1XOff = 0;
+                    r1YOff = room1.getHeight()/2;
+                    r2XOff = room2.getWidth();
+                    r2YOff = room2.getHeight()/2;
+                }
+            }
+
+
+            Point center1 = new Point(room1.getX() + r1XOff, room1.getY() + r1YOff);
+            Point center2 = new Point(room2.getX() + r2XOff, room2.getY() + r2YOff);
 
             int x=Math.min((int)center1.getX(), (int)center2.getX());
             int y=Math.min((int)center1.getY(), (int)center2.getY());

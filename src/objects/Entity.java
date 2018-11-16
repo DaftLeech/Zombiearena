@@ -41,8 +41,7 @@ public abstract class Entity extends GameObject{
     public boolean collition(GameObject obj){
         //System.out.println(obj.hitboxes.stream().noneMatch(hitbox -> collition(hitbox)));
         if(obj instanceof Map) {
-            System.out.println("MAP!!");
-            System.out.println(yaw);
+            GeomUtil geomUtil = new GeomUtil();
             for(Rectangle room : Map.allRooms) {
 
                 Line[] lines = new Line[4];
@@ -52,7 +51,7 @@ public abstract class Entity extends GameObject{
                 lines[3] = new Line(room.getX(),room.getY()+room.getHeight(),room.getX()+room.getWidth(),room.getY()+room.getHeight());
 
                 for(Line line : lines) {
-                    if (hitboxes.stream().anyMatch(hitbox -> line.intersects(hitbox)))
+                    if (hitboxes.stream().anyMatch(hitbox -> Map.contains(geomUtil.intersect(hitbox,line).pt.x,geomUtil.intersect(hitbox,line).pt.y)));
                         return true;
                 }
             }

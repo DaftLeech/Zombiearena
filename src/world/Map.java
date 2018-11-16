@@ -2,6 +2,7 @@ package world;
 
 
 import engine.ThreadManager;
+import entitys.Zombie;
 import general.Zombiearena;
 import objects.GameObject;
 import org.newdawn.slick.Color;
@@ -9,6 +10,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.*;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 import render.Render;
 import java.util.ArrayList;
 
@@ -42,7 +44,7 @@ public class Map extends GameObject {
         dngn = new Dungeon(size,0.7, deepth);
 
         GeomUtil util = new GeomUtil();
-        shape = dngn.getFinalRooms().get(0);
+        shape = size;
         System.out.println(shape.getPointCount());
 
         allRooms = new ArrayList<>(dngn.getFinalRooms());
@@ -57,11 +59,13 @@ public class Map extends GameObject {
             rsize = roomIDs.size();
             for(int i = 0; i <allRooms.size(); i++){
                 if(roomIDs.contains((Object)i)) {
-                    Shape[] unionRes = util.union(shape, allRooms.get(i));
+                    Shape[] unionRes = util.subtract(shape, allRooms.get(i));
                     if (unionRes.length == 1) {
                         shape = unionRes[0];
                         roomIDs.remove((Object) i);
                         rsize--;
+                        System.out.println(rsize);
+
                     }
 
                 }
@@ -88,7 +92,8 @@ public class Map extends GameObject {
 
 
             g.setColor(Color.white);
-            //g.texture(size,base);
+            //g.texture(size,tile);
+
 
             for(Rectangle room : dngn.getFinalRooms()){
                 g.texture(room,tile);
@@ -108,6 +113,19 @@ public class Map extends GameObject {
 
                 for(Line line : lines) {
                     g.draw(line);
+                    if(Zombiearena.pLocal.getCurWeapon() != null ) {
+                        if (Zombiearena.pLocal.getCurWeapon().hitboxes.size() > 0) {
+                            float dirX = line.getDY();
+                            float dirY = line.getDX();
+                            //dirX += Math.cos(Math.toRadians(90));
+                            //dirY += Math.sin(Math.toRadians(90));
+
+                            Circle hitbox = Zombiearena.pLocal.getCurWeapon().hitboxes.get(0);
+                            Line op = new Line(hitbox.getX()+hitbox.radius,hitbox.getY()+hitbox.radius,hitbox.getX()+hitbox.radius+dirX*10000f,hitbox.getY()+hitbox.radius+dirY*10000f);
+                            g.draw(op);
+                        }
+                    }
+
                 }
             }
 

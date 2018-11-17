@@ -3,6 +3,7 @@ package weapons;
 import entitys.Player;
 import objects.Entity;
 import org.newdawn.slick.Animation;
+import org.newdawn.slick.geom.GeomUtil;
 
 public abstract class AbstractWeapon extends Entity {
 
@@ -33,6 +34,7 @@ public abstract class AbstractWeapon extends Entity {
     public int frameAnim = 0;
     public int frameCount = 0;
     public float lastFrame;
+
     public int waitFactor = 1;
     public boolean breakAnimation = false;
     int lastParentState = 0;

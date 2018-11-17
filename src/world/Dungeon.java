@@ -143,6 +143,9 @@ public class Dungeon {
             Point center1 = new Point(room1.getX() + r1XOff, room1.getY() + r1YOff);
             Point center2 = new Point(room2.getX() + r2XOff, room2.getY() + r2YOff);
 
+            center1 = new Point(room1.getX() + room1.getWidth()/2, room1.getY() + room1.getHeight()/2);
+            center2 = new Point(room2.getX() + room2.getWidth()/2, room2.getY() + room2.getHeight()/2);
+
             int x=Math.min((int)center1.getX(), (int)center2.getX());
             int y=Math.min((int)center1.getY(), (int)center2.getY());
             int width=Math.max(Math.abs((int)center1.getX() - (int)center2.getX()),pathWidth);

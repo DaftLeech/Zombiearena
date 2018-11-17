@@ -105,6 +105,9 @@ public class Player extends Entity {
 
         g.translate(Map.location.getX(), Map.location.getY());
         g.drawString(String.valueOf(curWeapon.collition()),50,500);
+        if(curWeapon.lastHitResult != null)
+        g.drawString(String.valueOf(curWeapon.lastHitResult.pt.getX())+" "+String.valueOf(curWeapon.lastHitResult.pt.getY()),50,550);
+        g.drawString(String.valueOf(location.getX())+" "+String.valueOf(location.getY()),50,600);
 
         g.flush();
 
@@ -303,7 +306,8 @@ public class Player extends Entity {
     private void handleMoveDir(Point dir, int delta) {
         float speed = 0.3F * delta;
         Point newLoc = new Point(location.getX() + dir.getX() * speed, location.getY() + dir.getY() * speed);
-        if (Map.contains(newLoc) && !curWeapon.collition(dir.getX() * speed,dir.getY() * speed)) {
+        //Map.contains(newLoc) &&
+        if ( !curWeapon.collition(dir.getX() * speed,dir.getY() * speed)) {
 
                 Point newMapLoc = new Point(Map.location.getX() + dir.getX() * speed, Map.location.getY() + dir.getY() * speed);
                 Map.location = newMapLoc;

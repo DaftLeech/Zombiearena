@@ -13,6 +13,7 @@ import org.newdawn.slick.geom.*;
 import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 import render.Render;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Map extends GameObject {
 
@@ -211,5 +212,8 @@ public class Map extends GameObject {
     public static boolean contains(float x, float y){
         Point p = new Point(x,y);
         return dngn.getPaths().stream().anyMatch(r -> r.contains(p)) || dngn.getFinalRooms().stream().anyMatch(r -> r.contains(p));
+    }
+    public static boolean contains(float x, float y, Rectangle room){
+        return allRooms.stream().filter(obj -> obj!=room).anyMatch(r -> r.contains(x,y));
     }
 }
